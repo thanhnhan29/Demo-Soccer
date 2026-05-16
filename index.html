@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MatchPulse - Football Intelligence</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="site-header">
+        <a class="brand" href="#/">
+          <span class="brand-mark">MP</span>
+          <span>
+            <strong>MatchPulse</strong>
+            <small>agentic football blog</small>
+          </span>
+        </a>
+        <nav class="top-nav" aria-label="Điều hướng chính">
+          <a href="#/">Home</a>
+          <a href="#/league">Leagues</a>
+          <a href="#/watch">Watch</a>
+          <a href="#/agent">Agent</a>
+          <a href="#/admin">Admin</a>
+        </nav>
+        <span class="role-badge" id="roleBadge">User mode</span>
+        <button class="ghost-button" type="button" id="refreshBtn">Refresh feed</button>
+      </header>
+
+      <main id="app" class="page-root"></main>
+    </div>
+
+    <template id="homeTemplate">
+      <section class="score-strip" aria-label="Trận đấu đang nổi bật"></section>
+      <section class="home-layout">
+        <div>
+          <section class="hero-match"></section>
+          <section class="match-grid" aria-label="Danh sách trận đấu"></section>
+        </div>
+        <aside class="right-rail">
+          <section class="rail-panel">
+            <div class="panel-heading">
+              <span class="accent-bar"></span>
+              <h2>Hot reads</h2>
+            </div>
+            <div class="hot-list"></div>
+          </section>
+          <section class="rail-panel">
+            <div class="panel-heading">
+              <span class="accent-bar"></span>
+              <h2>Agent brief</h2>
+            </div>
+            <div class="agent-brief"></div>
+          </section>
+        </aside>
+      </section>
+    </template>
+
+    <template id="detailTemplate">
+      <article class="detail-page"></article>
+    </template>
+
+    <template id="adminTemplate">
+      <section class="admin-page"></section>
+    </template>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
