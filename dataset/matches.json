@@ -1,0 +1,1022 @@
+[
+  {
+    "id": "premier-league-2023-08-13-00-30-00-newcastle-aston-villa",
+    "league": "Premier League",
+    "season": "2023-2024",
+    "status": "Final",
+    "time": "00:30, 13/08/2023",
+    "home": "Newcastle",
+    "away": "Aston Villa",
+    "score": "5 - 1",
+    "title": "Newcastle 5 - 1 Aston Villa",
+    "summary": "Not found.",
+    "image": "https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&w=1400&q=80",
+    "readTime": "3 min",
+    "related": 0,
+    "stats": {
+      "possession": [
+        50,
+        50
+      ],
+      "shots": [
+        0,
+        0
+      ],
+      "xg": [
+        0,
+        0
+      ]
+    },
+    "chapters": [],
+    "events": [],
+    "articleIntro": "Not found.",
+    "articleNote": "Not found.",
+    "source": "dataset/raw/england_epl_2023-2024/2023-08-12_newcastle-united-aston-villa-premier-league/2023-08-13_Newcastle_5-1_Aston_Villa_WtSNtKT8.json"
+  },
+  {
+    "id": "premier-league-2023-08-13-23-30-00-chelsea-liverpool",
+    "league": "Premier League",
+    "season": "2023-2024",
+    "status": "Final",
+    "time": "23:30, 13/08/2023",
+    "home": "Chelsea",
+    "away": "Liverpool",
+    "score": "1 - 1",
+    "title": "Chelsea 1 - 1 Liverpool",
+    "summary": "Not found.",
+    "image": "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?auto=format&fit=crop&w=1200&q=80",
+    "readTime": "3 min",
+    "related": 0,
+    "stats": {
+      "possession": [
+        50,
+        50
+      ],
+      "shots": [
+        0,
+        0
+      ],
+      "xg": [
+        0,
+        0
+      ]
+    },
+    "chapters": [],
+    "events": [],
+    "articleIntro": "Not found.",
+    "articleNote": "Not found.",
+    "source": "dataset/raw/england_epl_2023-2024/2023-08-13_chelsea-fc-liverpool-fc-premier-league-2023-2024/2023-08-13_Chelsea_1-1_Liverpool_v7VVvbbL.json"
+  },
+  {
+    "id": "premier-league-2023-08-19-02-45-00-nottingham-sheffield-utd",
+    "league": "Premier League",
+    "season": "2023-2024",
+    "status": "Final",
+    "time": "02:45, 19/08/2023",
+    "home": "Nottingham",
+    "away": "Sheffield Utd",
+    "score": "2 - 1",
+    "title": "Nottingham 2 - 1 Sheffield Utd",
+    "summary": "Not found.",
+    "image": "https://images.unsplash.com/photo-1517747614396-d21a78b850e8?auto=format&fit=crop&w=1200&q=80",
+    "readTime": "3 min",
+    "related": 0,
+    "stats": {
+      "possession": [
+        50,
+        50
+      ],
+      "shots": [
+        0,
+        0
+      ],
+      "xg": [
+        0,
+        0
+      ]
+    },
+    "chapters": [],
+    "events": [],
+    "articleIntro": "Not found.",
+    "articleNote": "Not found.",
+    "source": "dataset/raw/england_epl_2023-2024/2023-08-18_nottingham-forest-sheffield-united-premier-league/2023-08-19_Nottingham_2-1_Sheffield_Utd_zZpAhHSK.json"
+  },
+  {
+    "id": "premier-league-2023-08-19-22-00-00-wolves-brighton",
+    "league": "Premier League",
+    "season": "2023-2024",
+    "status": "Final",
+    "time": "22:00, 19/08/2023",
+    "home": "Wolves",
+    "away": "Brighton",
+    "score": "1 - 4",
+    "title": "Wolves 1 - 4 Brighton",
+    "summary": "Not found.",
+    "image": "https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&w=1200&q=80",
+    "readTime": "3 min",
+    "related": 0,
+    "stats": {
+      "possession": [
+        50,
+        50
+      ],
+      "shots": [
+        0,
+        0
+      ],
+      "xg": [
+        0,
+        0
+      ]
+    },
+    "chapters": [],
+    "events": [],
+    "articleIntro": "Not found.",
+    "articleNote": "Not found.",
+    "source": "dataset/raw/england_epl_2023-2024/2023-08-19_wolverhampton-wanderers-brighton-hove-albion-premier-league-2023-2024/2023-08-19_Wolves_1-4_Brighton_p8zpnF5l.json"
+  },
+  {
+    "id": "premier-league-2023-08-26-22-00-00-arsenal-fulham",
+    "league": "Premier League",
+    "season": "2023-2024",
+    "status": "Final",
+    "time": "22:00, 26/08/2023",
+    "home": "Arsenal",
+    "away": "Fulham",
+    "score": "2 - 2",
+    "title": "Arsenal 2 - 2 Fulham",
+    "summary": "Not found.",
+    "image": "https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&w=1400&q=80",
+    "readTime": "3 min",
+    "related": 0,
+    "stats": {
+      "possession": [
+        50,
+        50
+      ],
+      "shots": [
+        0,
+        0
+      ],
+      "xg": [
+        0,
+        0
+      ]
+    },
+    "chapters": [],
+    "events": [],
+    "articleIntro": "Not found.",
+    "articleNote": "Not found.",
+    "source": "dataset/raw/england_epl_2023-2024/2023-08-26_arsenal-fc-fulham-fc-premier-league-2023-2024/2023-08-26_Arsenal_2-2_Fulham_6NOhpgz1.json"
+  },
+  {
+    "id": "uefa-champions-league-2023-07-12-02-45-00-fc-ballkani-ludogorets",
+    "league": "UEFA Champions League",
+    "season": "2023-2024",
+    "status": "Final",
+    "time": "02:45, 12/07/2023",
+    "home": "FC Ballkani",
+    "away": "Ludogorets",
+    "score": "2 - 0",
+    "title": "FC Ballkani 2 - 0 Ludogorets",
+    "summary": "Not found.",
+    "image": "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?auto=format&fit=crop&w=1200&q=80",
+    "readTime": "3 min",
+    "related": 0,
+    "stats": {
+      "possession": [
+        50,
+        50
+      ],
+      "shots": [
+        0,
+        0
+      ],
+      "xg": [
+        0,
+        0
+      ]
+    },
+    "chapters": [],
+    "events": [],
+    "articleIntro": "Not found.",
+    "articleNote": "Not found.",
+    "source": "dataset/raw/europe_champions-league_2023-2024/2023-07-11_fc-ballkani-pfc-ludogorets/2023-07-12_FC_Ballkani_2-0_Ludogorets_EipL05lC.json"
+  },
+  {
+    "id": "uefa-champions-league-2023-07-26-02-00-00-dnipro-1-panathinaikos",
+    "league": "UEFA Champions League",
+    "season": "2023-2024",
+    "status": "Final",
+    "time": "02:00, 26/07/2023",
+    "home": "Dnipro-1",
+    "away": "Panathinaikos",
+    "score": "1 - 3",
+    "title": "Dnipro-1 1 - 3 Panathinaikos",
+    "summary": "Not found.",
+    "image": "https://images.unsplash.com/photo-1517747614396-d21a78b850e8?auto=format&fit=crop&w=1200&q=80",
+    "readTime": "3 min",
+    "related": 0,
+    "stats": {
+      "possession": [
+        50,
+        50
+      ],
+      "shots": [
+        0,
+        0
+      ],
+      "xg": [
+        0,
+        0
+      ]
+    },
+    "chapters": [],
+    "events": [],
+    "articleIntro": "Not found.",
+    "articleNote": "Not found.",
+    "source": "dataset/raw/europe_champions-league_2023-2024/2023-07-25_sc-dnipro-1-panathinaikos-fc/2023-07-26_Dnipro-1_1-3_Panathinaikos_lKN3ol6b.json"
+  },
+  {
+    "id": "uefa-champions-league-2023-08-02-01-30-00-panathinaikos-dnipro-1",
+    "league": "UEFA Champions League",
+    "season": "2023-2024",
+    "status": "Final",
+    "time": "01:30, 02/08/2023",
+    "home": "Panathinaikos",
+    "away": "Dnipro-1",
+    "score": "2 - 2",
+    "title": "Panathinaikos 2 - 2 Dnipro-1",
+    "summary": "Not found.",
+    "image": "https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&w=1200&q=80",
+    "readTime": "3 min",
+    "related": 0,
+    "stats": {
+      "possession": [
+        50,
+        50
+      ],
+      "shots": [
+        0,
+        0
+      ],
+      "xg": [
+        0,
+        0
+      ]
+    },
+    "chapters": [],
+    "events": [],
+    "articleIntro": "Not found.",
+    "articleNote": "Not found.",
+    "source": "dataset/raw/europe_champions-league_2023-2024/2023-08-01_panathinaikos-fc-sc-dnipro-1/2023-08-02_Panathinaikos_2-2_Dnipro-1_rsN7p8L4.json"
+  },
+  {
+    "id": "uefa-champions-league-2023-08-23-03-00-00-rakow-fc-copenhagen",
+    "league": "UEFA Champions League",
+    "season": "2023-2024",
+    "status": "Final",
+    "time": "03:00, 23/08/2023",
+    "home": "Rakow",
+    "away": "FC Copenhagen",
+    "score": "0 - 1",
+    "title": "Rakow 0 - 1 FC Copenhagen",
+    "summary": "Not found.",
+    "image": "https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&w=1400&q=80",
+    "readTime": "3 min",
+    "related": 0,
+    "stats": {
+      "possession": [
+        50,
+        50
+      ],
+      "shots": [
+        0,
+        0
+      ],
+      "xg": [
+        0,
+        0
+      ]
+    },
+    "chapters": [],
+    "events": [],
+    "articleIntro": "Not found.",
+    "articleNote": "Not found.",
+    "source": "dataset/raw/europe_champions-league_2023-2024/2023-08-22_rakow-czestochowa-fc-kobenhavn/2023-08-23_Rakow_0-1_FC_Copenhagen_ra4BXy0m.json"
+  },
+  {
+    "id": "uefa-champions-league-2023-09-20-03-00-00-barcelona-antwerp",
+    "league": "UEFA Champions League",
+    "season": "2023-2024",
+    "status": "Final",
+    "time": "03:00, 20/09/2023",
+    "home": "Barcelona",
+    "away": "Antwerp",
+    "score": "5 - 0",
+    "title": "Barcelona 5 - 0 Antwerp",
+    "summary": "Not found.",
+    "image": "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?auto=format&fit=crop&w=1200&q=80",
+    "readTime": "3 min",
+    "related": 0,
+    "stats": {
+      "possession": [
+        50,
+        50
+      ],
+      "shots": [
+        0,
+        0
+      ],
+      "xg": [
+        0,
+        0
+      ]
+    },
+    "chapters": [],
+    "events": [],
+    "articleIntro": "Not found.",
+    "articleNote": "Not found.",
+    "source": "dataset/raw/europe_champions-league_2023-2024/2023-09-19_fc-barcelona-royal-antwerp/2023-09-20_Barcelona_5-0_Antwerp_G067uJ1M.json"
+  },
+  {
+    "id": "ligue-1-2023-08-12-03-00-00-nice-lille",
+    "league": "Ligue 1",
+    "season": "2023-2024",
+    "status": "Final",
+    "time": "03:00, 12/08/2023",
+    "home": "Nice",
+    "away": "Lille",
+    "score": "1 - 1",
+    "title": "Nice 1 - 1 Lille",
+    "summary": "Not found.",
+    "image": "https://images.unsplash.com/photo-1517747614396-d21a78b850e8?auto=format&fit=crop&w=1200&q=80",
+    "readTime": "3 min",
+    "related": 0,
+    "stats": {
+      "possession": [
+        50,
+        50
+      ],
+      "shots": [
+        0,
+        0
+      ],
+      "xg": [
+        0,
+        0
+      ]
+    },
+    "chapters": [],
+    "events": [],
+    "articleIntro": "Not found.",
+    "articleNote": "Not found.",
+    "source": "dataset/raw/france_league-1_2023-2024/2023-08-11_ogc-nice-lille-osc/2023-08-12_Nice_1-1_Lille_SdyiV3RA.json"
+  },
+  {
+    "id": "ligue-1-2023-08-26-03-00-00-nantes-monaco",
+    "league": "Ligue 1",
+    "season": "2023-2024",
+    "status": "Final",
+    "time": "03:00, 26/08/2023",
+    "home": "Nantes",
+    "away": "Monaco",
+    "score": "3 - 3",
+    "title": "Nantes 3 - 3 Monaco",
+    "summary": "Not found.",
+    "image": "https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&w=1200&q=80",
+    "readTime": "3 min",
+    "related": 0,
+    "stats": {
+      "possession": [
+        50,
+        50
+      ],
+      "shots": [
+        0,
+        0
+      ],
+      "xg": [
+        0,
+        0
+      ]
+    },
+    "chapters": [],
+    "events": [],
+    "articleIntro": "Not found.",
+    "articleNote": "Not found.",
+    "source": "dataset/raw/france_league-1_2023-2024/2023-08-25_fc-nantes-as-monaco-ligue-1-2023-2024/2023-08-26_Nantes_3-3_Monaco_vodQZSBQ.json"
+  },
+  {
+    "id": "ligue-1-2023-08-27-03-00-00-psg-lens",
+    "league": "Ligue 1",
+    "season": "2023-2024",
+    "status": "Final",
+    "time": "03:00, 27/08/2023",
+    "home": "PSG",
+    "away": "Lens",
+    "score": "3 - 1",
+    "title": "PSG 3 - 1 Lens",
+    "summary": "Not found.",
+    "image": "https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&w=1400&q=80",
+    "readTime": "3 min",
+    "related": 0,
+    "stats": {
+      "possession": [
+        50,
+        50
+      ],
+      "shots": [
+        0,
+        0
+      ],
+      "xg": [
+        0,
+        0
+      ]
+    },
+    "chapters": [],
+    "events": [],
+    "articleIntro": "Not found.",
+    "articleNote": "Not found.",
+    "source": "dataset/raw/france_league-1_2023-2024/2023-08-26_paris-saint-germain-rc-lens-ligue-1-2023-2024/2023-08-27_PSG_3-1_Lens_UFEZC54D.json"
+  },
+  {
+    "id": "ligue-1-2023-08-27-21-00-00-strasbourg-toulouse",
+    "league": "Ligue 1",
+    "season": "2023-2024",
+    "status": "Final",
+    "time": "21:00, 27/08/2023",
+    "home": "Strasbourg",
+    "away": "Toulouse",
+    "score": "2 - 0",
+    "title": "Strasbourg 2 - 0 Toulouse",
+    "summary": "Not found.",
+    "image": "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?auto=format&fit=crop&w=1200&q=80",
+    "readTime": "3 min",
+    "related": 0,
+    "stats": {
+      "possession": [
+        50,
+        50
+      ],
+      "shots": [
+        0,
+        0
+      ],
+      "xg": [
+        0,
+        0
+      ]
+    },
+    "chapters": [],
+    "events": [],
+    "articleIntro": "Not found.",
+    "articleNote": "Not found.",
+    "source": "dataset/raw/france_league-1_2023-2024/2023-08-27_rc-strasbourg-toulouse-fc/2023-08-27_Strasbourg_2-0_Toulouse_bVxcU6Zm.json"
+  },
+  {
+    "id": "ligue-1-2023-09-03-19-00-00-toulouse-clermont",
+    "league": "Ligue 1",
+    "season": "2023-2024",
+    "status": "Final",
+    "time": "19:00, 03/09/2023",
+    "home": "Toulouse",
+    "away": "Clermont",
+    "score": "2 - 2",
+    "title": "Toulouse 2 - 2 Clermont",
+    "summary": "Not found.",
+    "image": "https://images.unsplash.com/photo-1517747614396-d21a78b850e8?auto=format&fit=crop&w=1200&q=80",
+    "readTime": "3 min",
+    "related": 0,
+    "stats": {
+      "possession": [
+        50,
+        50
+      ],
+      "shots": [
+        0,
+        0
+      ],
+      "xg": [
+        0,
+        0
+      ]
+    },
+    "chapters": [],
+    "events": [],
+    "articleIntro": "Not found.",
+    "articleNote": "Not found.",
+    "source": "dataset/raw/france_league-1_2023-2024/2023-09-03_toulouse-fc-clermont-foot-ligue-1/2023-09-03_Toulouse_2-2_Clermont_Wry5Sp40.json"
+  },
+  {
+    "id": "bundesliga-2023-08-19-02-30-00-werder-bremen-bayern-munich",
+    "league": "Bundesliga",
+    "season": "2023-2024",
+    "status": "Final",
+    "time": "02:30, 19/08/2023",
+    "home": "Werder Bremen",
+    "away": "Bayern Munich",
+    "score": "0 - 4",
+    "title": "Werder Bremen 0 - 4 Bayern Munich",
+    "summary": "Not found.",
+    "image": "https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&w=1200&q=80",
+    "readTime": "3 min",
+    "related": 0,
+    "stats": {
+      "possession": [
+        50,
+        50
+      ],
+      "shots": [
+        0,
+        0
+      ],
+      "xg": [
+        0,
+        0
+      ]
+    },
+    "chapters": [],
+    "events": [],
+    "articleIntro": "Not found.",
+    "articleNote": "Not found.",
+    "source": "dataset/raw/germany_bundesliga_2023-2024/2023-08-18_werder-bremen-bayern-munchen-bundesliga-2023-2024/2023-08-19_Werder_Bremen_0-4_Bayern_Munich_v7JY0hIu.json"
+  },
+  {
+    "id": "bundesliga-2023-08-20-21-30-00-union-berlin-mainz",
+    "league": "Bundesliga",
+    "season": "2023-2024",
+    "status": "Final",
+    "time": "21:30, 20/08/2023",
+    "home": "Union Berlin",
+    "away": "Mainz",
+    "score": "4 - 1",
+    "title": "Union Berlin 4 - 1 Mainz",
+    "summary": "Not found.",
+    "image": "https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&w=1400&q=80",
+    "readTime": "3 min",
+    "related": 0,
+    "stats": {
+      "possession": [
+        50,
+        50
+      ],
+      "shots": [
+        0,
+        0
+      ],
+      "xg": [
+        0,
+        0
+      ]
+    },
+    "chapters": [],
+    "events": [],
+    "articleIntro": "Not found.",
+    "articleNote": "Not found.",
+    "source": "dataset/raw/germany_bundesliga_2023-2024/2023-08-20_union-berlin-mainz-05/2023-08-20_Union_Berlin_4-1_Mainz_nXMtaWnh.json"
+  },
+  {
+    "id": "bundesliga-2023-08-26-02-30-00-rb-leipzig-stuttgart",
+    "league": "Bundesliga",
+    "season": "2023-2024",
+    "status": "Final",
+    "time": "02:30, 26/08/2023",
+    "home": "RB Leipzig",
+    "away": "Stuttgart",
+    "score": "5 - 1",
+    "title": "RB Leipzig 5 - 1 Stuttgart",
+    "summary": "Not found.",
+    "image": "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?auto=format&fit=crop&w=1200&q=80",
+    "readTime": "3 min",
+    "related": 0,
+    "stats": {
+      "possession": [
+        50,
+        50
+      ],
+      "shots": [
+        0,
+        0
+      ],
+      "xg": [
+        0,
+        0
+      ]
+    },
+    "chapters": [],
+    "events": [],
+    "articleIntro": "Not found.",
+    "articleNote": "Not found.",
+    "source": "dataset/raw/germany_bundesliga_2023-2024/2023-08-25_rb-leipzig-vfb-stuttgart/2023-08-26_RB_Leipzig_5-1_Stuttgart_lQf6OnG3.json"
+  },
+  {
+    "id": "bundesliga-2023-08-26-21-30-00-heidenheim-hoffenheim",
+    "league": "Bundesliga",
+    "season": "2023-2024",
+    "status": "Final",
+    "time": "21:30, 26/08/2023",
+    "home": "Heidenheim",
+    "away": "Hoffenheim",
+    "score": "2 - 3",
+    "title": "Heidenheim 2 - 3 Hoffenheim",
+    "summary": "Not found.",
+    "image": "https://images.unsplash.com/photo-1517747614396-d21a78b850e8?auto=format&fit=crop&w=1200&q=80",
+    "readTime": "3 min",
+    "related": 0,
+    "stats": {
+      "possession": [
+        50,
+        50
+      ],
+      "shots": [
+        0,
+        0
+      ],
+      "xg": [
+        0,
+        0
+      ]
+    },
+    "chapters": [],
+    "events": [],
+    "articleIntro": "Not found.",
+    "articleNote": "Not found.",
+    "source": "dataset/raw/germany_bundesliga_2023-2024/2023-08-26_1-fc-heidenheim-tsg-hoffenheim/2023-08-26_Heidenheim_2-3_Hoffenheim_MXsgFrwj.json"
+  },
+  {
+    "id": "bundesliga-2023-08-27-00-30-00-b-monchengladbach-bayer-leverkusen",
+    "league": "Bundesliga",
+    "season": "2023-2024",
+    "status": "Final",
+    "time": "00:30, 27/08/2023",
+    "home": "B. Monchengladbach",
+    "away": "Bayer Leverkusen",
+    "score": "0 - 3",
+    "title": "B. Monchengladbach 0 - 3 Bayer Leverkusen",
+    "summary": "Not found.",
+    "image": "https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&w=1200&q=80",
+    "readTime": "3 min",
+    "related": 0,
+    "stats": {
+      "possession": [
+        50,
+        50
+      ],
+      "shots": [
+        0,
+        0
+      ],
+      "xg": [
+        0,
+        0
+      ]
+    },
+    "chapters": [],
+    "events": [],
+    "articleIntro": "Not found.",
+    "articleNote": "Not found.",
+    "source": "dataset/raw/germany_bundesliga_2023-2024/2023-08-26_borussia-monchengladbach-bayer-leverkusen-bundesliga-2023-2024/2023-08-27_B._Monchengladbach_0-3_Bayer_Leverkusen_8Q1ILp0M.json"
+  },
+  {
+    "id": "serie-a-2023-08-21-00-30-00-as-roma-salernitana",
+    "league": "Serie A",
+    "season": "2023-2024",
+    "status": "Final",
+    "time": "00:30, 21/08/2023",
+    "home": "AS Roma",
+    "away": "Salernitana",
+    "score": "2 - 2",
+    "title": "AS Roma 2 - 2 Salernitana",
+    "summary": "Not found.",
+    "image": "https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&w=1400&q=80",
+    "readTime": "3 min",
+    "related": 0,
+    "stats": {
+      "possession": [
+        50,
+        50
+      ],
+      "shots": [
+        0,
+        0
+      ],
+      "xg": [
+        0,
+        0
+      ]
+    },
+    "chapters": [],
+    "events": [],
+    "articleIntro": "Not found.",
+    "articleNote": "Not found.",
+    "source": "dataset/raw/italy_serie-a_2023-2024/2023-08-20_as-roma-us-salernitana/2023-08-21_AS_Roma_2-2_Salernitana_lbAYWufr.json"
+  },
+  {
+    "id": "serie-a-2023-08-27-02-45-00-verona-as-roma",
+    "league": "Serie A",
+    "season": "2023-2024",
+    "status": "Final",
+    "time": "02:45, 27/08/2023",
+    "home": "Verona",
+    "away": "AS Roma",
+    "score": "2 - 1",
+    "title": "Verona 2 - 1 AS Roma",
+    "summary": "Not found.",
+    "image": "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?auto=format&fit=crop&w=1200&q=80",
+    "readTime": "3 min",
+    "related": 0,
+    "stats": {
+      "possession": [
+        50,
+        50
+      ],
+      "shots": [
+        0,
+        0
+      ],
+      "xg": [
+        0,
+        0
+      ]
+    },
+    "chapters": [],
+    "events": [],
+    "articleIntro": "Not found.",
+    "articleNote": "Not found.",
+    "source": "dataset/raw/italy_serie-a_2023-2024/2023-08-26_hellas-verona-as-roma-serie-a-2023-2024/2023-08-27_Verona_2-1_AS_Roma_zylLtHN6.json"
+  },
+  {
+    "id": "serie-a-2023-09-03-02-45-00-napoli-lazio",
+    "league": "Serie A",
+    "season": "2023-2024",
+    "status": "Final",
+    "time": "02:45, 03/09/2023",
+    "home": "Napoli",
+    "away": "Lazio",
+    "score": "1 - 2",
+    "title": "Napoli 1 - 2 Lazio",
+    "summary": "Not found.",
+    "image": "https://images.unsplash.com/photo-1517747614396-d21a78b850e8?auto=format&fit=crop&w=1200&q=80",
+    "readTime": "3 min",
+    "related": 0,
+    "stats": {
+      "possession": [
+        50,
+        50
+      ],
+      "shots": [
+        0,
+        0
+      ],
+      "xg": [
+        0,
+        0
+      ]
+    },
+    "chapters": [],
+    "events": [],
+    "articleIntro": "Not found.",
+    "articleNote": "Not found.",
+    "source": "dataset/raw/italy_serie-a_2023-2024/2023-09-02_ssc-napoli-ss-lazio-serie-a-2023-2024/2023-09-03_Napoli_1-2_Lazio_vNZpcx8m.json"
+  },
+  {
+    "id": "serie-a-2023-09-17-02-45-00-genoa-napoli",
+    "league": "Serie A",
+    "season": "2023-2024",
+    "status": "Final",
+    "time": "02:45, 17/09/2023",
+    "home": "Genoa",
+    "away": "Napoli",
+    "score": "2 - 2",
+    "title": "Genoa 2 - 2 Napoli",
+    "summary": "Not found.",
+    "image": "https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&w=1200&q=80",
+    "readTime": "3 min",
+    "related": 0,
+    "stats": {
+      "possession": [
+        50,
+        50
+      ],
+      "shots": [
+        0,
+        0
+      ],
+      "xg": [
+        0,
+        0
+      ]
+    },
+    "chapters": [],
+    "events": [],
+    "articleIntro": "Not found.",
+    "articleNote": "Not found.",
+    "source": "dataset/raw/italy_serie-a_2023-2024/2023-09-16_genoa-cfc-ssc-napoli-serie-a-2023-2024/2023-09-17_Genoa_2-2_Napoli_bitp6XjI.json"
+  },
+  {
+    "id": "serie-a-2023-09-16-21-00-00-juventus-lazio",
+    "league": "Serie A",
+    "season": "2023-2024",
+    "status": "Final",
+    "time": "21:00, 16/09/2023",
+    "home": "Juventus",
+    "away": "Lazio",
+    "score": "3 - 1",
+    "title": "Juventus 3 - 1 Lazio",
+    "summary": "Not found.",
+    "image": "https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&w=1400&q=80",
+    "readTime": "3 min",
+    "related": 0,
+    "stats": {
+      "possession": [
+        50,
+        50
+      ],
+      "shots": [
+        0,
+        0
+      ],
+      "xg": [
+        0,
+        0
+      ]
+    },
+    "chapters": [],
+    "events": [],
+    "articleIntro": "Not found.",
+    "articleNote": "Not found.",
+    "source": "dataset/raw/italy_serie-a_2023-2024/2023-09-16_juventus-fc-ss-lazio-serie-a-2023-2024/2023-09-16_Juventus_3-1_Lazio_4UKAiYyP.json"
+  },
+  {
+    "id": "la-liga-2023-08-14-03-30-00-getafe-barcelona",
+    "league": "La Liga",
+    "season": "2023-2024",
+    "status": "Final",
+    "time": "03:30, 14/08/2023",
+    "home": "Getafe",
+    "away": "Barcelona",
+    "score": "0 - 0",
+    "title": "Getafe 0 - 0 Barcelona",
+    "summary": "Not found.",
+    "image": "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?auto=format&fit=crop&w=1200&q=80",
+    "readTime": "3 min",
+    "related": 0,
+    "stats": {
+      "possession": [
+        50,
+        50
+      ],
+      "shots": [
+        0,
+        0
+      ],
+      "xg": [
+        0,
+        0
+      ]
+    },
+    "chapters": [],
+    "events": [],
+    "articleIntro": "Not found.",
+    "articleNote": "Not found.",
+    "source": "dataset/raw/spain_laliga_2023-2024/2023-08-13_getafe-cf-fc-barcelona-liga-1-division-2023-2024/2023-08-14_Getafe_0-0_Barcelona_jm6JbWz5.json"
+  },
+  {
+    "id": "la-liga-2023-08-14-01-30-00-villarreal-betis",
+    "league": "La Liga",
+    "season": "2023-2024",
+    "status": "Final",
+    "time": "01:30, 14/08/2023",
+    "home": "Villarreal",
+    "away": "Betis",
+    "score": "1 - 2",
+    "title": "Villarreal 1 - 2 Betis",
+    "summary": "Not found.",
+    "image": "https://images.unsplash.com/photo-1517747614396-d21a78b850e8?auto=format&fit=crop&w=1200&q=80",
+    "readTime": "3 min",
+    "related": 0,
+    "stats": {
+      "possession": [
+        50,
+        50
+      ],
+      "shots": [
+        0,
+        0
+      ],
+      "xg": [
+        0,
+        0
+      ]
+    },
+    "chapters": [],
+    "events": [],
+    "articleIntro": "Not found.",
+    "articleNote": "Not found.",
+    "source": "dataset/raw/spain_laliga_2023-2024/2023-08-13_villarreal-cf-real-betis-liga-1-division-2023-2024/2023-08-14_Villarreal_1-2_Betis_4jANcjjB.json"
+  },
+  {
+    "id": "la-liga-2023-08-21-01-30-00-barcelona-cadiz-cf",
+    "league": "La Liga",
+    "season": "2023-2024",
+    "status": "Final",
+    "time": "01:30, 21/08/2023",
+    "home": "Barcelona",
+    "away": "Cadiz CF",
+    "score": "2 - 0",
+    "title": "Barcelona 2 - 0 Cadiz CF",
+    "summary": "Not found.",
+    "image": "https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&w=1200&q=80",
+    "readTime": "3 min",
+    "related": 0,
+    "stats": {
+      "possession": [
+        50,
+        50
+      ],
+      "shots": [
+        0,
+        0
+      ],
+      "xg": [
+        0,
+        0
+      ]
+    },
+    "chapters": [],
+    "events": [],
+    "articleIntro": "Not found.",
+    "articleNote": "Not found.",
+    "source": "dataset/raw/spain_laliga_2023-2024/2023-08-20_fc-barcelona-cadiz-cf-liga-1-division-2023-2024/2023-08-21_Barcelona_2-0_Cadiz_CF_tj2ewM4d.json"
+  },
+  {
+    "id": "la-liga-2023-08-22-01-00-00-alaves-sevilla",
+    "league": "La Liga",
+    "season": "2023-2024",
+    "status": "Final",
+    "time": "01:00, 22/08/2023",
+    "home": "Alaves",
+    "away": "Sevilla",
+    "score": "4 - 3",
+    "title": "Alaves 4 - 3 Sevilla",
+    "summary": "Not found.",
+    "image": "https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&w=1400&q=80",
+    "readTime": "3 min",
+    "related": 0,
+    "stats": {
+      "possession": [
+        50,
+        50
+      ],
+      "shots": [
+        0,
+        0
+      ],
+      "xg": [
+        0,
+        0
+      ]
+    },
+    "chapters": [],
+    "events": [],
+    "articleIntro": "Not found.",
+    "articleNote": "Not found.",
+    "source": "dataset/raw/spain_laliga_2023-2024/2023-08-21_deportivo-alaves-sevilla-fc-liga-1-division-2023-2024/2023-08-22_Alaves_4-3_Sevilla_jLqn0qC9.json"
+  },
+  {
+    "id": "la-liga-2023-08-27-03-30-00-sevilla-girona",
+    "league": "La Liga",
+    "season": "2023-2024",
+    "status": "Final",
+    "time": "03:30, 27/08/2023",
+    "home": "Sevilla",
+    "away": "Girona",
+    "score": "1 - 2",
+    "title": "Sevilla 1 - 2 Girona",
+    "summary": "Not found.",
+    "image": "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?auto=format&fit=crop&w=1200&q=80",
+    "readTime": "3 min",
+    "related": 0,
+    "stats": {
+      "possession": [
+        50,
+        50
+      ],
+      "shots": [
+        0,
+        0
+      ],
+      "xg": [
+        0,
+        0
+      ]
+    },
+    "chapters": [],
+    "events": [],
+    "articleIntro": "Not found.",
+    "articleNote": "Not found.",
+    "source": "dataset/raw/spain_laliga_2023-2024/2023-08-26_sevilla-fc-girona-fc-liga-1-division-2023-2024/2023-08-27_Sevilla_1-2_Girona_zDm46KYr.json"
+  }
+]

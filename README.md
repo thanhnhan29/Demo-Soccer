@@ -67,4 +67,6 @@ Backend nên có context builder:
 
 ## Cách chạy
 
-Mở trực tiếp `index.html` trong browser, hoặc dùng một static server bất kỳ nếu muốn test giống môi trường web hơn.
+- Dataset demo nằm ở `dataset/matches.json` và `dataset/raw/`.
+- Nên chạy bằng một static server để frontend fetch được dataset (trình duyệt có thể chặn fetch khi mở file:// trực tiếp).
+- Nếu vẫn muốn mở trực tiếp `index.html`, bạn sẽ thấy dữ liệu seed fallback thay vì dataset.
