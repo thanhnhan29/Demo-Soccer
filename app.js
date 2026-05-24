@@ -127,6 +127,11 @@ const seedMatches = [
 
 const HOME_INITIAL_COUNT = 7;
 const HOME_STEP = 6;
+const AGENT_API_URL =
+  window.AGENT_API_URL ||
+  localStorage.getItem("agentApiUrl") ||
+  "http://localhost:8008/api/agent";
+const AGENT_TIMEOUT_MS = 20000;
 
 const LEAGUE_THEMES = {
   "Premier League": {
@@ -2516,8 +2521,7 @@ function buildAgentContext(match, currentMinute, userMessage) {
   };
 }
 
-async function askAgent(packet) {
-  await new Promise((resolve) => setTimeout(resolve, 350));
+function mockAgentAnswer(packet) {
   const ctx = packet.activeContext;
   let contextIntro = "";
   const isVi = currentLanguage === "vi";
@@ -2530,7 +2534,7 @@ async function askAgent(packet) {
     } else if (ctx.type === "range") {
       contextIntro = isVi
         ? `Tôi đang xem xét phân đoạn trận đấu từ phút ${ctx.start} đến phút ${ctx.end} theo yêu cầu của bạn. `
-        : `I am looking at the match segment from minute ${ctx.start} to minute ${ctx.end} per your request. `;
+        : `I am looking at the match segment from minute ${ctx.start} to ${ctx.end} per your request. `;
     } else if (ctx.type === "chapter") {
       contextIntro = isVi
         ? `Tôi đang phân tích chương "${ctx.label}" được ghim. `
@@ -2558,8 +2562,52 @@ async function askAgent(packet) {
     return `${contextIntro}${eventText}\n\n[Agent]: Dựa trên số liệu thống kê trận đấu giữa ${packet.match.teams.join(" và ")} (Tỷ số: ${packet.match.score}), đây là khoảng thời gian có tính chất chiến thuật cao. ${
       packet.media.nearbyEvents.length ? "Bạn có muốn tôi đi sâu phân tích một trong các tình huống trên không?" : "Bạn có câu hỏi nào cụ thể về các pha bóng diễn ra lúc này không?"
     }`;
-  } else {
-    return `${contextIntro}${eventText}\n\n[Agent]: Based on the match data for ${packet.match.teams.join(" vs ")} (${packet.match.score}), this segment represents a key tactical phase. Let me know if you want a detailed breakdown of these actions!`;
+  }
+  return `${contextIntro}${eventText}\n\n[Agent]: Based on the match data for ${packet.match.teams.join(" vs ")} (${packet.match.score}), this segment represents a key tactical phase. Let me know if you want a detailed breakdown of these actions!`;
+}
+
+async function askAgent(packet) {
+  if (!AGENT_API_URL) {
+    return mockAgentAnswer(packet);
+  }
+
+  const payload = {
+    message: packet.userMessage,
+    packet,
+    lang: currentLanguage
+  };
+
+  const controller = new AbortController();
+  const timeoutId = window.setTimeout(() => controller.abort(), AGENT_TIMEOUT_MS);
+
+  try {
+    const response = await fetch(AGENT_API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload),
+      signal: controller.signal
+    });
+
+    if (!response.ok) {
+      throw new Error(`Agent API failed (${response.status})`);
+    }
+
+    const data = await response.json();
+    if (data && typeof data.answer === "string" && data.answer.trim()) {
+      return data.answer.trim();
+    }
+    if (data && typeof data.message === "string" && data.message.trim()) {
+      return data.message.trim();
+    }
+
+    throw new Error("Empty agent response");
+  } catch (error) {
+    console.warn("Agent API error, using fallback.", error);
+    return mockAgentAnswer(packet);
+  } finally {
+    window.clearTimeout(timeoutId);
   }
 }
 

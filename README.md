@@ -87,3 +87,38 @@ Trong phiên bản v1.1, schema dữ liệu trong bộ nhớ và lưu trữ loca
 - Dataset demo nằm ở `dataset/matches.json` và `dataset/raw/`.
 - Nên chạy bằng một static server để frontend fetch được dataset (trình duyệt có thể chặn fetch khi mở file:// trực tiếp).
 - Nếu vẫn muốn mở trực tiếp `index.html`, bạn sẽ thấy dữ liệu seed fallback thay vì dataset.
+
+## Agent bridge (chat -> model)
+
+Frontend chat trong [app.js](app.js) se goi API `/api/agent`. De ket noi voi model trong pipeline/agent:
+
+1) Chay vLLM server (giong pipeline/agent/run.py):
+
+```bash
+python -m vllm.entrypoints.openai.api_server \
+   --model /raid/hvtham/SoccerNet/Qwen3-VL-8B-Instruct \
+   --port 22002 \
+   --trust-remote-code
+```
+
+2) Chay bridge server (trong folder Demo-Soccer):
+
+```bash
+AGENT_SERVER=http://127.0.0.1:22002/v1 \
+AGENT_MODEL=/raid/hvtham/SoccerNet/Qwen3-VL-8B-Instruct \
+python /raid/hvtham/SoccerNet/Demo-Soccer/agent_server.py
+```
+
+3) Dat endpoint cho frontend (chon 1):
+
+```js
+localStorage.setItem("agentApiUrl", "http://localhost:8008/api/agent");
+```
+
+Hoac khai bao truoc khi load app.js:
+
+```html
+<script>
+   window.AGENT_API_URL = "http://localhost:8008/api/agent";
+</script>
+```
