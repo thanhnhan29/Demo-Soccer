@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Work+Sans:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=Work+Sans:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="./styles.css" />
@@ -23,21 +23,24 @@
           </span>
         </a>
         <nav class="top-nav" aria-label="Điều hướng chính">
-          <a href="#/">Home</a>
-          <a href="#/league">Leagues</a>
-          <a href="#/watch">Watch</a>
-          <a href="#/agent">Agent</a>
-          <a href="#/admin">Admin</a>
+          <a href="#/" id="navHome">Home</a>
+          <a href="#/league" id="navLeagues">Leagues</a>
+          <a href="#/watch" id="navWatch">Watch</a>
+          <a href="#/agent" id="navAgent">Agent</a>
+          <a href="#/admin" id="navAdmin">Admin</a>
         </nav>
         <span class="role-badge" id="roleBadge">User mode</span>
         <button class="ghost-button" type="button" id="refreshBtn">Refresh feed</button>
+        <div class="lang-selector">
+          <button class="lang-button" data-lang="vi" type="button">VI</button>
+          <button class="lang-button" data-lang="en" type="button">EN</button>
+        </div>
       </header>
 
       <main id="app" class="page-root"></main>
     </div>
 
     <template id="homeTemplate">
-      <section class="score-strip" aria-label="Trận đấu đang nổi bật"></section>
       <section class="home-layout">
         <div>
           <section class="hero-match"></section>

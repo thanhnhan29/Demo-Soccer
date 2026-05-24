@@ -65,6 +65,23 @@ Backend nên có context builder:
 6. Gọi agent API.
 7. Lưu lại turn mới và cập nhật rolling summary khi vượt token budget.
 
+## Chuẩn hóa Schema dữ liệu (v1.1)
+
+Trong phiên bản v1.1, schema dữ liệu trong bộ nhớ và lưu trữ local (`localStorage`) đã được chuẩn hóa để đảm bảo đồng nhất, an toàn và dễ nâng cấp lên cơ sở dữ liệu quan hệ (SQL):
+
+1. **Từ Tuple sang Object cho Sự kiện (`MatchEvent`)**:
+   - Chuyển đổi định dạng `events` từ dạng mảng tuple vô danh `[phút, mô tả][]` sang mảng đối tượng có kiểu rõ ràng: `{ minute: string, minuteVal: number, text: string }`.
+   - Thuộc tính `minuteVal` lưu giá trị số nguyên của phút (ví dụ `"90+2'"` -> `90`) giúp sắp xếp và lọc phạm vi sự kiện chính xác khi truy vấn Agent AI.
+2. **Đồng bộ hóa các trường**:
+   - Đổi tên trường `related` thành `relatedCount: number` để tường minh hơn.
+   - Thêm trường `readTimeMinutes: number` được tính toán tự động từ chuỗi `readTime` (ví dụ `"5 phút"` -> `5`) phục vụ tính năng sắp xếp/lọc.
+   - Chuẩn hóa trường `source` thành `string | null` đại diện cho đường dẫn dữ liệu gốc.
+3. **Tính năng tương thích ngược**:
+   - Hàm `normalizeMatch()` tự động chuyển đổi các dữ liệu cũ (dạng tuple, trường `related` cũ) khi ứng dụng tải dữ liệu hoặc đọc từ cache trình duyệt.
+4. **Bảo mật và i18n**:
+   - Ngăn chặn lỗi XSS bằng cách bổ sung `escapeHtml()` khi render tiêu đề bài viết (`match.title`).
+   - Hỗ trợ đầy đủ đa ngôn ngữ (EN/VI) với các tooltip động thông qua hàm `t()`.
+
 ## Cách chạy
 
 - Dataset demo nằm ở `dataset/matches.json` và `dataset/raw/`.

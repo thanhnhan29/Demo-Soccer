@@ -13,7 +13,9 @@ const seedMatches = [
     image:
       "https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&w=1400&q=80",
     readTime: "5 phút",
-    related: 18,
+    readTimeMinutes: 5,
+    relatedCount: 18,
+    source: null,
     stats: { possession: [43, 57], shots: [8, 11], xg: [1.1, 1.4] },
     chapters: [
       { minute: 4, label: "Australia ép cánh phải" },
@@ -22,10 +24,10 @@ const seedMatches = [
       { minute: 66, label: "Chuỗi thay người quyết định" }
     ],
     events: [
-      ["04'", "Australia đẩy hậu vệ biên lên rất cao, buộc Việt Nam lùi block thấp."],
-      ["18'", "Việt Nam chuyển sang thoát bóng qua trung lộ trước khi bẻ ra cánh trái."],
-      ["37'", "Pha đá phạt góc tạo ra cú đánh đầu đầu tiên đi trúng mục tiêu."],
-      ["66'", "Hai thay đổi nhân sự giúp tốc độ phản công tốt hơn trong 15 phút cuối."]
+      { minute: "04'", minuteVal: 4,  text: "Australia đẩy hậu vệ biên lên rất cao, buộc Việt Nam lùi block thấp." },
+      { minute: "18'", minuteVal: 18, text: "Việt Nam chuyển sang thoát bóng qua trung lộ trước khi bẻ ra cánh trái." },
+      { minute: "37'", minuteVal: 37, text: "Pha đá phạt góc tạo ra cú đánh đầu đầu tiên đi trúng mục tiêu." },
+      { minute: "66'", minuteVal: 66, text: "Hai thay đổi nhân sự giúp tốc độ phản công tốt hơn trong 15 phút cuối." }
     ]
   },
   {
@@ -42,7 +44,9 @@ const seedMatches = [
     image:
       "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?auto=format&fit=crop&w=1200&q=80",
     readTime: "7 phút",
-    related: 32,
+    readTimeMinutes: 7,
+    relatedCount: 32,
+    source: null,
     stats: { possession: [54, 46], shots: [14, 10], xg: [1.8, 1.6] },
     chapters: [
       { minute: 9, label: "City overload half-space" },
@@ -51,10 +55,10 @@ const seedMatches = [
       { minute: 84, label: "Trận đấu vỡ cấu trúc" }
     ],
     events: [
-      ["09'", "City tạo tam giác bên phải để kéo tiền vệ trụ Arsenal rời vị trí."],
-      ["23'", "Arsenal khóa Rodri bằng pressing bóng hai, giành lại thế trận trong 10 phút."],
-      ["51'", "Một pha cut-back sau lưng trung vệ mở ra bàn gỡ quan trọng."],
-      ["84'", "Hai đội cùng đẩy tốc độ, khoảng trống giữa tuyến phòng ngự lộ rõ."]
+      { minute: "09'", minuteVal: 9,  text: "City tạo tam giác bên phải để kéo tiền vệ trụ Arsenal rời vị trí." },
+      { minute: "23'", minuteVal: 23, text: "Arsenal khóa Rodri bằng pressing bóng hai, giành lại thế trận trong 10 phút." },
+      { minute: "51'", minuteVal: 51, text: "Một pha cut-back sau lưng trung vệ mở ra bàn gỡ quan trọng." },
+      { minute: "84'", minuteVal: 84, text: "Hai đội cùng đẩy tốc độ, khoảng trống giữa tuyến phòng ngự lộ rõ." }
     ]
   },
   {
@@ -71,7 +75,9 @@ const seedMatches = [
     image:
       "https://images.unsplash.com/photo-1517747614396-d21a78b850e8?auto=format&fit=crop&w=1200&q=80",
     readTime: "4 phút",
-    related: 11,
+    readTimeMinutes: 4,
+    relatedCount: 11,
+    source: null,
     stats: { possession: [61, 39], shots: [16, 6], xg: [2.0, 0.7] },
     chapters: [
       { minute: 12, label: "PSG bó vào trung lộ" },
@@ -80,10 +86,10 @@ const seedMatches = [
       { minute: 78, label: "Kiểm soát nhịp cuối trận" }
     ],
     events: [
-      ["12'", "PSG đặt hai tiền vệ công vào khoảng giữa hậu vệ và tiền vệ Marseille."],
-      ["34'", "Marseille có pha phản công hiếm hoi nhưng thiếu đường chuyền cuối."],
-      ["58'", "PSG ghi bàn sau khi đoạt bóng ngay trên phần sân đối thủ."],
-      ["78'", "Đội chủ nhà giảm tốc và giữ bóng ở biên để bảo vệ lợi thế."]
+      { minute: "12'", minuteVal: 12, text: "PSG đặt hai tiền vệ công vào khoảng giữa hậu vệ và tiền vệ Marseille." },
+      { minute: "34'", minuteVal: 34, text: "Marseille có pha phản công hiếm hoi nhưng thiếu đường chuyền cuối." },
+      { minute: "58'", minuteVal: 58, text: "PSG ghi bàn sau khi đoạt bóng ngay trên phần sân đối thủ." },
+      { minute: "78'", minuteVal: 78, text: "Đội chủ nhà giảm tốc và giữ bóng ở biên để bảo vệ lợi thế." }
     ]
   },
   {
@@ -100,7 +106,9 @@ const seedMatches = [
     image:
       "https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&w=1200&q=80",
     readTime: "6 phút",
-    related: 23,
+    readTimeMinutes: 6,
+    relatedCount: 23,
+    source: null,
     stats: { possession: [49, 51], shots: [13, 8], xg: [2.4, 1.0] },
     chapters: [
       { minute: 7, label: "Nhật Bản khóa số 6" },
@@ -109,10 +117,10 @@ const seedMatches = [
       { minute: 72, label: "Đòn kết liễu" }
     ],
     events: [
-      ["07'", "Nhật Bản dùng tiền đạo lệch trái che đường chuyền vào tiền vệ trụ."],
-      ["29'", "Pha chạy người thứ ba phá vỡ hàng thủ và tạo bàn mở tỷ số."],
-      ["54'", "Hàn Quốc chuyển sang 4-2-3-1 để tăng người ở trung tuyến."],
-      ["72'", "Nhật Bản tận dụng khoảng trống sau lưng hậu vệ biên để ghi bàn thứ ba."]
+      { minute: "07'", minuteVal: 7,  text: "Nhật Bản dùng tiền đạo lệch trái che đường chuyền vào tiền vệ trụ." },
+      { minute: "29'", minuteVal: 29, text: "Pha chạy người thứ ba phá vỡ hàng thủ và tạo bàn mở tỷ số." },
+      { minute: "54'", minuteVal: 54, text: "Hàn Quốc chuyển sang 4-2-3-1 để tăng người ở trung tuyến." },
+      { minute: "72'", minuteVal: 72, text: "Nhật Bản tận dụng khoảng trống sau lưng hậu vệ biên để ghi bàn thứ ba." }
     ]
   }
 ];
@@ -124,32 +132,32 @@ const LEAGUE_THEMES = {
   "Premier League": {
     bg: "var(--league-premier)",
     ink: "var(--league-premier-ink)",
-    accent: "#d25a7a"
+    accent: "#e31c5f"
   },
   "UEFA Champions League": {
     bg: "var(--league-champions)",
     ink: "var(--league-champions-ink)",
-    accent: "#4b6fc6"
+    accent: "#0f52ba"
   },
   "Ligue 1": {
     bg: "var(--league-ligue1)",
     ink: "var(--league-ligue1-ink)",
-    accent: "#2e8a60"
+    accent: "#2d6a4f"
   },
   Bundesliga: {
     bg: "var(--league-bundesliga)",
     ink: "var(--league-bundesliga-ink)",
-    accent: "#d4703c"
+    accent: "#c84b31"
   },
   "Serie A": {
     bg: "var(--league-seriea)",
     ink: "var(--league-seriea-ink)",
-    accent: "#2f7ea3"
+    accent: "#207398"
   },
   "La Liga": {
     bg: "var(--league-laliga)",
     ink: "var(--league-laliga-ink)",
-    accent: "#c39a2d"
+    accent: "#b58900"
   }
 };
 
@@ -176,104 +184,133 @@ const LANGUAGE_KEY = "matchpulse.lang";
 const SUPPORTED_LANGS = ["vi", "en"];
 const COPY = {
   vi: {
-    siteTitle: "MatchPulse - Phan tich bong da",
-    brandTagline: "blog bong da co agent",
-    navHome: "Trang chu",
-    navLeagues: "Giai dau",
+    siteTitle: "MatchPulse - Phân tích bóng đá",
+    brandTagline: "blog bóng đá có Agent",
+    navHome: "Trang chủ",
+    navLeagues: "Giải đấu",
     navWatch: "Xem",
     navAgent: "Agent",
-    navAdmin: "Quan tri",
-    roleUser: "Nguoi dung",
-    roleAdmin: "Quan tri vien",
-    refreshFeed: "Lam moi",
-    homeScoreStripLabel: "Tran dau dang noi bat",
-    homeMatchListLabel: "Danh sach tran dau",
-    homeEmptyTitle: "Chua co bai tran dau",
-    homeEmptyDesc: "Dang nhap admin de them bai dau tien.",
-    homeEmptyAction: "Mo admin",
-    homeOpenMatchRoom: "Mo match room",
+    navAdmin: "Quản trị",
+    roleUser: "Người dùng",
+    roleAdmin: "Quản trị viên",
+    refreshFeed: "Làm mới",
+    homeScoreStripLabel: "Trận đấu nổi bật",
+    homeMatchListLabel: "Danh sách trận đấu",
+    homeEmptyTitle: "Chưa có bài trận đấu",
+    homeEmptyDesc: "Đăng nhập Admin để thêm bài viết đầu tiên.",
+    homeEmptyAction: "Mở Admin",
+    homeOpenMatchRoom: "Mở phòng trận đấu",
     homeAgentContext: "Agent-ready context",
-    homeHotReads: "Bai viet noi bat",
-    homeAgentBrief: "Agent brief",
-    homeMore: "Xem them ({count})",
-    agentBriefIntro: "Agent nen nhan context theo tung lop thay vi toan bo bai viet.",
-    agentBriefMatchLabel: "Goi tran dau",
+    homeHotReads: "Bài viết nổi bật",
+    homeAgentBrief: "Tóm tắt Agent",
+    homeMore: "Xem thêm ({count})",
+    agentBriefIntro: "Agent nên nhận context theo từng lớp thay vì toàn bộ bài viết.",
+    agentBriefMatchLabel: "Gói trận đấu",
     agentBriefMatch: "metadata, score, lineups, stats, event timeline.",
-    agentBriefMediaLabel: "Goi media",
+    agentBriefMediaLabel: "Gói media",
     agentBriefMedia: "current timestamp, selected chapter, transcript window ±90s.",
-    agentBriefMemoryLabel: "Goi memory",
+    agentBriefMemoryLabel: "Gói memory",
     agentBriefMemory: "user intent summary, preferences, unresolved questions.",
-    relatedLabel: "lien quan",
-    leaguesKicker: "Giai dau",
-    leaguesTitle: "Bang xep hang demo theo mau giai dau",
-    leaguesSubtitle: "Bang xep hang duoc tinh tu sample matches de phuc vu trai nghiem blog va storytelling.",
-    leagueBoardKicker: "Bang xep hang",
-    leagueBoardMeta: "{count} bai tran dau · demo standings",
-    leagueBoardPill: "Pastel board",
-    leagueLatestStories: "Bai moi nhat",
-    leagueNote: "Bang xep hang demo dua tren mot phan du lieu, se duoc cap nhat khi LLM hoan thien noi dung.",
-    leagueNotFound: "Chua co du lieu.",
+    relatedLabel: "liên quan",
+    leaguesKicker: "Giải đấu",
+    leaguesTitle: "Bảng xếp hạng demo theo mẫu giải đấu",
+    leaguesSubtitle: "Bảng xếp hạng được tính từ các trận đấu mẫu để phục vụ trải nghiệm blog và truyền tải câu chuyện.",
+    leagueBoardKicker: "Bảng xếp hạng",
+    leagueBoardMeta: "{count} bài trận đấu · bảng xếp hạng demo",
+    leagueBoardPill: "Bảng pastel",
+    leagueLatestStories: "Bài mới nhất",
+    leagueNote: "Bảng xếp hạng demo dựa trên một phần dữ liệu, sẽ được cập nhật khi LLM hoàn thiện nội dung.",
+    leagueNotFound: "Chưa có dữ liệu.",
     standingsRank: "#",
     standingsClub: "CLB",
-    standingsPlayed: "Tran",
+    standingsPlayed: "Trận",
     standingsGd: "HS",
-    standingsPts: "Diem",
-    detailMatchCenter: "Match center",
-    detailAskAgent: "Hoi agent tran dau",
-    detailMemoryOn: "bo nho:on",
-    detailSend: "Gui",
-    detailPromptSummary: "Tom tat 5 diem chinh",
-    detailPromptGoal: "Vi sao ban thang xay ra?",
-    detailPromptHighlight: "Nhay toi pha hay nhat",
-    detailEdit: "Edit bai nay",
+    standingsPts: "Điểm",
+    detailMatchCenter: "Trung tâm trận đấu",
+    detailAskAgent: "Hỏi Agent trận đấu",
+    detailMemoryOn: "bộ nhớ: bật",
+    detailSend: "Gửi",
+    detailPromptSummary: "Tóm tắt 5 điểm chính",
+    detailPromptGoal: "Vì sao bàn thắng xảy ra?",
+    detailPromptHighlight: "Nhảy tới pha hay nhất",
+    detailEdit: "Chỉnh sửa bài này",
     detailVideoLabel: "video",
-    detailLoadingEvents: "Dang tai events...",
-    detailNoEvents: "Khong co event nao.",
-    detailMoreEvents: "Xem them events ({count})",
-    adminAccessKicker: "Admin access",
-    adminLoginTitle: "Dang nhap khu bien tap",
-    adminLoginDesc: "Admin co the them, sua, xoa bai tran dau va chinh tung phan noi dung chi tiet.",
-    adminPasswordLabel: "Mat khau demo",
-    adminLoginBtn: "Vao dashboard",
-    adminLoginHint: "Prototype dung password {password}. Production can auth backend that.",
-    adminLoginError: "Mat khau chua dung.",
-    adminDashboardKicker: "Admin dashboard",
-    adminDashboardTitle: "Quan ly blog tran dau",
-    adminDashboardDesc: "Dashboard chi de quan ly nhanh. Edit se mo dung giao dien bai viet de sua truc tiep tren view.",
-    adminAddDraft: "Them bai nhap",
-    adminLogout: "Logout",
-    adminListTitle: "Danh sach bai",
-    adminInlineTitle: "Inline editor",
-    adminInlineDesc: "Bam Edit de mo trang bai o che do bien tap. Cac doan title, summary, noi dung va timeline sua ngay tren layout that.",
-    adminListEmpty: "Chua co bai nao.",
-    adminNewDraftTitle: "Bai nhap moi",
-    adminDraftSummary: "Nhap tom tat tran dau tai day.",
-    adminDraftLeague: "Draft league",
-    adminDraftHome: "Home FC",
-    adminDraftAway: "Away FC",
-    adminDeleteConfirm: "Xoa bai \"{title}\"?",
-    adminEdit: "Edit",
-    adminView: "View",
-    adminDelete: "Delete",
-    adminEditingLive: "Editing live view",
-    adminPublishControls: "Publish controls",
-    adminStatus: "Trang thai",
-    adminScore: "Ty so",
-    adminRelated: "So lien quan",
-    adminSave: "Luu thay doi",
-    adminViewUser: "Xem ban user",
-    adminDashboard: "Dashboard",
-    adminCoverLabel: "Cover image URL",
-    notFound: "Chua co du lieu.",
+    detailLoadingEvents: "Đang tải sự kiện...",
+    detailNoEvents: "Không có sự kiện nào.",
+    detailMoreEvents: "Xem thêm sự kiện ({count})",
+    adminAccessKicker: "Truy cập Admin",
+    adminLoginTitle: "Đăng nhập khu biên tập",
+    adminLoginDesc: "Admin có thể thêm, sửa, xóa bài trận đấu và chỉnh sửa từng phần nội dung chi tiết.",
+    adminPasswordLabel: "Mật khẩu demo",
+    adminLoginBtn: "Vào dashboard",
+    adminLoginHint: "Bản thử nghiệm sử dụng mật khẩu {password}. Bản chính thức cần xác thực backend.",
+    adminLoginError: "Mật khẩu chưa đúng.",
+    adminDashboardKicker: "Bảng điều khiển Admin",
+    adminDashboardTitle: "Quản lý blog trận đấu",
+    adminDashboardDesc: "Dashboard chỉ để quản lý nhanh. Nhấp Sửa sẽ mở đúng giao diện bài viết để sửa trực tiếp trên giao diện thực tế.",
+    adminAddDraft: "Thêm bản nháp",
+    adminLogout: "Đăng xuất",
+    adminListTitle: "Danh sách bài viết",
+    adminInlineTitle: "Trình chỉnh sửa trực tiếp",
+    adminInlineDesc: "Bấm Sửa để mở trang bài ở chế độ biên tập. Tiêu đề, tóm tắt, nội dung và dòng thời gian được chỉnh sửa trực tiếp trên giao diện thực tế.",
+    adminListEmpty: "Chưa có bài viết nào.",
+    adminNewDraftTitle: "Bài viết nháp mới",
+    adminDraftSummary: "Nhập tóm tắt trận đấu tại đây.",
+    adminDraftLeague: "Giải đấu nháp",
+    adminDraftHome: "CLB Nhà",
+    adminDraftAway: "CLB Khách",
+    adminDeleteConfirm: "Xóa bài viết \"{title}\"?",
+    adminEdit: "Sửa",
+    adminView: "Xem",
+    adminDelete: "Xóa",
+    adminEditingLive: "Đang chỉnh sửa giao diện trực tiếp",
+    adminPublishControls: "Kiểm soát xuất bản",
+    adminStatus: "Trạng thái",
+    adminScore: "Tỷ số",
+    adminRelated: "Số liên quan",
+    adminSave: "Lưu thay đổi",
+    adminViewUser: "Xem bản người dùng",
+    adminDashboard: "Bảng điều khiển",
+    adminCoverLabel: "Đường dẫn ảnh bìa",
+    notFound: "Chưa có dữ liệu.",
     chatAgentIntro:
-      "Minh dang giu match packet, timeline va context video hien tai. Ban co the hoi ve chien thuat, cau thu, hoac yeu cau nhay toi pha dang xem.",
+      "Mình đang giữ thông tin trận đấu, dòng thời gian và ngữ cảnh video hiện tại. Bạn có thể hỏi về chiến thuật, cầu thủ hoặc yêu cầu nhảy tới pha bóng đang xem.",
     mockAgent:
-      "Mock agent: minh se tra loi dua tren {teams}, score {score}, video phut {minute}. {event}",
-    mockAgentEvent: "Moc gan nhat: {events}",
-    mockAgentNoEvent: "Hien chua co event gan timestamp nay.",
-    statPossession: "Kiem soat",
-    statShots: "Sut",
-    statXg: "xG"
+      "Mock agent: mình sẽ trả lời dựa trên {teams}, tỷ số {score}, video phút {minute}. {event}",
+    mockAgentEvent: "Mốc gần nhất: {events}",
+    mockAgentNoEvent: "Hiện chưa có sự kiện nào gần mốc thời gian này.",
+    statPossession: "Kiểm soát",
+    statShots: "Sút",
+    statXg: "xG",
+    minute: "Phút",
+    detailVideoSegmentLabel: "Chọn đoạn phân tích:",
+    detailAttachSegment: "Đính kèm",
+    cancel: "Hủy",
+    timelineSelectingRange: "Đang chọn: Phút",
+    detailPinMoment: "Ghim mốc",
+    detailPinMomentTitle: "Ghim mốc thời gian này làm câu hỏi",
+    detailAskAgentChapter: "Hỏi Agent về chương này",
+    detailAskAgentEvent: "Hỏi Agent về sự kiện này",
+    chapterPillLabel: "📎 Đã ghim chương: {label}",
+    eventPillLabel: "📎 Đã ghim sự kiện: Phút {minute}'",
+    rangePillLabel: "📎 Đã ghim: Phút {start} - {end}",
+    momentPillLabel: "📎 Đã ghim: Phút {minute}",
+    defaultTimePillLabel: "📷 Mốc đang phát: Phút {minute}:00",
+    adminSearchPlaceholder: "Tìm kiếm bài viết...",
+    adminSortLabel: "Sắp xếp",
+    adminSortNewest: "Thời gian (Mới nhất)",
+    adminSortOldest: "Thời gian (Cũ nhất)",
+    adminSortTitleAsc: "Tiêu đề (A-Z)",
+    adminSortTitleDesc: "Tiêu đề (Z-A)",
+    adminSortLeague: "Giải đấu (A-Z)",
+    adminFilterLeagueAll: "Tất cả giải đấu",
+    adminFilterStatusLabel: "Trạng thái",
+    adminFilterStatusAll: "Tất cả trạng thái",
+    adminGroupLabel: "Nhóm theo",
+    adminGroupNone: "Không nhóm",
+    adminGroupLeague: "Giải đấu",
+    adminGroupStatus: "Trạng thái",
+    clearPinTitle: "Hủy ghim"
   },
   en: {
     siteTitle: "MatchPulse - Football Intelligence",
@@ -373,20 +410,56 @@ const COPY = {
     mockAgentNoEvent: "No nearby events for this timestamp.",
     statPossession: "Possession",
     statShots: "Shots",
-    statXg: "xG"
+    statXg: "xG",
+    minute: "Min",
+    detailVideoSegmentLabel: "Select analysis segment:",
+    detailAttachSegment: "Attach",
+    cancel: "Cancel",
+    timelineSelectingRange: "Selecting: Min",
+    detailPinMoment: "Pin moment",
+    detailPinMomentTitle: "Pin this timestamp as context",
+    detailAskAgentChapter: "Ask Agent about this chapter",
+    detailAskAgentEvent: "Ask Agent about this event",
+    chapterPillLabel: "📎 Pinned chapter: {label}",
+    eventPillLabel: "📎 Pinned event: Min {minute}'",
+    rangePillLabel: "📎 Pinned: Min {start} - {end}",
+    momentPillLabel: "📎 Pinned: Min {minute}",
+    defaultTimePillLabel: "📷 Playback time: Min {minute}:00",
+    adminSearchPlaceholder: "Search stories...",
+    adminSortLabel: "Sort",
+    adminSortNewest: "Time (Newest)",
+    adminSortOldest: "Time (Oldest)",
+    adminSortTitleAsc: "Title (A-Z)",
+    adminSortTitleDesc: "Title (Z-A)",
+    adminSortLeague: "League (A-Z)",
+    adminFilterLeagueAll: "All leagues",
+    adminFilterStatusLabel: "Status",
+    adminFilterStatusAll: "All status",
+    adminGroupLabel: "Group by",
+    adminGroupNone: "None",
+    adminGroupLeague: "League",
+    adminGroupStatus: "Status",
+    clearPinTitle: "Clear pin"
   }
 };
 
 const STATUS_LABELS = {
   vi: {
-    Final: "Ket thuc",
-    Preview: "Xem truoc",
-    Analysis: "Phan tich",
-    "Live brief": "Tom tat live",
-    "Tactical room": "Phong chien thuat",
-    Draft: "Nhap"
+    Final: "Kết thúc",
+    Preview: "Xem trước",
+    Analysis: "Phân tích",
+    "Live brief": "Tóm tắt trực tiếp",
+    "Tactical room": "Phòng chiến thuật",
+    Draft: "Bản nháp"
   },
-  en: {}
+  en: {
+    Final: "Final",
+    Preview: "Preview",
+    Analysis: "Analysis",
+    "Live brief": "Live brief",
+    "Tactical room": "Tactical room",
+    Draft: "Draft"
+  }
 };
 
 const TIMELINE_INITIAL_COUNT = 10;
@@ -402,6 +475,152 @@ let matches = [];
 let homeVisibleCount = HOME_INITIAL_COUNT;
 const timelineVisibleCounts = new Map();
 let currentLanguage = getInitialLanguage();
+let activeContext = null;
+let adminSearchQuery = "";
+let adminSortBy = "time-desc";
+let adminFilterLeague = "all";
+let adminFilterStatus = "all";
+let adminGroupBy = "none";
+const adminCollapsedGroups = new Set();
+
+const SEED_TRANSLATIONS = {
+  en: {
+    "u17-vietnam-australia": {
+      title: "Tactical Preview: Vietnam U17 vs Australia U17 - Overlapping Wingbacks battle",
+      summary: "Vietnam needs speed on the flanks and better press resistance to pull Australia out of their midblock.",
+      articleIntro: "U17 Vietnam enters this clash with a clear intent to challenge Australia's physical dominance through quick vertical transition and overload...",
+      articleNote: "Note: Vietnam's wingers must track back aggressively to support the fullbacks against Australia's high-pressing wide defenders.",
+      chapters: [
+        { minute: 4, label: "Australia overload right wing" },
+        { minute: 18, label: "Vietnam changes press tempo" },
+        { minute: 37, label: "Set piece opportunity" },
+        { minute: 66, label: "Tactical substitutions payoff" }
+      ],
+      events: [
+        { minute: "04'", minuteVal: 4,  text: "Australia push their wingbacks high, forcing Vietnam into a low defensive block." },
+        { minute: "18'", minuteVal: 18, text: "Vietnam transitions through the center before shifting play to the left wing." },
+        { minute: "37'", minuteVal: 37, text: "A corner kick results in the first header on target for the hosts." },
+        { minute: "66'", minuteVal: 66, text: "Two substitutions increase counter-attacking speed during the final 15 minutes." }
+      ]
+    },
+    "man-city-arsenal": {
+      title: "City and Arsenal Share Points: A Game of Second-Line Pressing Traps",
+      summary: "Both sides locked each other in a tight possession duel, where every diagonal pass opened a new tactical front.",
+      articleIntro: "The highly anticipated clash between Manchester City and Arsenal delivered a masterclass in tactical discipline...",
+      articleNote: "Note: Pressing structures were key to neutralising both Haaland and Saka in their respective final thirds.",
+      chapters: [
+        { minute: 9, label: "City overload half-space" },
+        { minute: 23, label: "Arsenal counter-pressing" },
+        { minute: 51, label: "Equalizer from cut-back" },
+        { minute: 84, label: "Structural breakdown" }
+      ],
+      events: [
+        { minute: "09'", minuteVal: 9,  text: "City create a right-side triangle to drag Arsenal's defensive midfielder out of position." },
+        { minute: "23'", minuteVal: 23, text: "Arsenal lock Rodri down using second-ball pressing, reclaiming momentum for 10 minutes." },
+        { minute: "51'", minuteVal: 51, text: "A cut-back behind the center-backs sets up a crucial equalizing goal." },
+        { minute: "84'", minuteVal: 84, text: "Both teams push the tempo, exposing large spaces between the lines." }
+      ]
+    },
+    "psg-marseille": {
+      title: "PSG Edge Marseille: The New Number 10 Pulling the Strings",
+      summary: "The goal came from a quick transition, but the main story was PSG's ball distribution around the box.",
+      articleIntro: "PSG secured a narrow victory over Marseille in a hard-fought Classique...",
+      articleNote: "Note: Marseille's deep block was difficult to break down, requiring patient central combinations.",
+      chapters: [
+        { minute: 12, label: "PSG tucking inside" },
+        { minute: 34, label: "Marseille 3v3 counter-attack" },
+        { minute: 58, label: "Opening goal" },
+        { minute: 78, label: "Closing match control" }
+      ],
+      events: [
+        { minute: "12'", minuteVal: 12, text: "PSG position two attacking midfielders in the space between Marseille's defense and midfield." },
+        { minute: "34'", minuteVal: 34, text: "Marseille launch a rare counter-attack but fail to deliver the final pass." },
+        { minute: "58'", minuteVal: 58, text: "PSG open the scoring after winning possession high up the pitch." },
+        { minute: "78'", minuteVal: 78, text: "The hosts slow down the tempo and keep possession wide to secure their lead." }
+      ]
+    },
+    "japan-korea": {
+      title: "Japan Stifle South Korea with a Compact 28-Meter Vertical Block",
+      summary: "A perfect study in spacing: keeping the shape narrow enough to press, yet wide enough to escape pressure.",
+      articleIntro: "Japan's tactical discipline was on display as they restricted South Korea's build-up options...",
+      articleNote: "Note: Dynamic positioning between Japan's front three prevented simple progress through the center.",
+      chapters: [
+        { minute: 7, label: "Japan lock Korea's number 6" },
+        { minute: 29, label: "Goal from third-man run" },
+        { minute: 54, label: "Korea change shape" },
+        { minute: 72, label: "Clinical finish" }
+      ],
+      events: [
+        { minute: "07'", minuteVal: 7,  text: "Japan's left winger covers the passing lane to South Korea's holding midfielder." },
+        { minute: "29'", minuteVal: 29, text: "A third-man running sequence penetrates the defense and scores the opening goal." },
+        { minute: "54'", minuteVal: 54, text: "Korea switch to a 4-2-3-1 to increase numbers in the center of midfield." },
+        { minute: "72'", minuteVal: 72, text: "Japan exploit the space behind the fullbacks to secure a third goal." }
+      ]
+    }
+  }
+};
+
+const TEAM_TRANSLATIONS = {
+  "U17 Việt Nam": "Vietnam U17",
+  "U17 Australia": "Australia U17",
+  "Nhật Bản": "Japan",
+  "Hàn Quốc": "South Korea",
+  "Genoa": "Genoa",
+  "Napoli": "Napoli",
+  "Juventus": "Juventus",
+  "Lazio": "Lazio",
+  "Toulouse": "Toulouse",
+  "Clermont": "Clermont",
+  "Strasbourg": "Strasbourg",
+  "Sevilla": "Sevilla",
+  "Girona": "Girona",
+  "PSG": "PSG",
+  "Lens": "Lens",
+  "Verona": "Verona",
+  "AS Roma": "AS Roma",
+  "B. Monchengladbach": "M'gladbach",
+  "Bayer Leverkusen": "Leverkusen",
+  "Arsenal": "Arsenal",
+  "Fulham": "Fulham",
+  "Heidenheim": "Heidenheim",
+  "Hoffenheim": "Hoffenheim"
+};
+
+function translateTeam(name) {
+  if (currentLanguage === "en") {
+    return TEAM_TRANSLATIONS[name] || name;
+  }
+  return name;
+}
+
+function getTranslatedMatch(match) {
+  if (!match) return match;
+  const cloned = { ...match };
+  cloned.home = translateTeam(cloned.home);
+  cloned.away = translateTeam(cloned.away);
+
+  if (currentLanguage === "en") {
+    const trans = SEED_TRANSLATIONS.en && SEED_TRANSLATIONS.en[match.id];
+    if (trans) {
+      cloned.title = trans.title;
+      cloned.summary = trans.summary;
+      if (trans.articleIntro) cloned.articleIntro = trans.articleIntro;
+      if (trans.articleNote) cloned.articleNote = trans.articleNote;
+      if (trans.chapters) cloned.chapters = trans.chapters;
+      if (trans.events) cloned.events = trans.events;
+    } else {
+      if (cloned.title && cloned.title.includes("Nhận định")) {
+        cloned.title = cloned.title.replace("Nhận định", "Preview").replace("vs", "vs");
+      }
+    }
+    if (cloned.time && cloned.time.includes("Chủ nhật")) {
+      cloned.time = cloned.time.replace("Chủ nhật", "Sunday");
+    } else if (cloned.time && cloned.time.includes("Thứ hai")) {
+      cloned.time = cloned.time.replace("Thứ hai", "Monday");
+    }
+  }
+  return cloned;
+}
 
 const app = document.querySelector("#app");
 const homeTemplate = document.querySelector("#homeTemplate");
@@ -482,7 +701,6 @@ function setLanguage(language) {
   updateRoleBadge();
   router();
 }
-
 function updateLanguageButtons() {
   langButtons.forEach((button) => {
     const isActive = button.dataset.lang === currentLanguage;
@@ -490,6 +708,76 @@ function updateLanguageButtons() {
     button.setAttribute("aria-pressed", String(isActive));
   });
 }
+
+// ---------------------------------------------------------------------------
+// Schema helpers
+// ---------------------------------------------------------------------------
+
+/**
+ * Parses the numeric value from a minute string like "04'" or "66+2'".
+ * Returns 0 if unparseable.
+ */
+function parseMinuteVal(minuteStr) {
+  const match = String(minuteStr || "").match(/(\d+)/);
+  return match ? Number(match[1]) : 0;
+}
+
+/**
+ * Normalizes a raw Match object (from dataset, localStorage, or seedMatches)
+ * into the canonical schema. Handles backward-compat for old field names and
+ * old event tuple format.
+ *
+ * @param {object} match - Raw match data
+ * @returns {object} Normalized match conforming to the canonical MatchObject schema
+ */
+function normalizeMatch(match) {
+  // --- events: support both legacy [string, string][] tuples and new {minute, minuteVal, text} objects ---
+  const rawEvents = Array.isArray(match.events) ? match.events : [];
+  const events = rawEvents.map((evt) => {
+    if (Array.isArray(evt)) {
+      // Legacy tuple format: [minuteStr, text]
+      const minuteStr = String(evt[0] || "");
+      return {
+        minute: minuteStr,
+        minuteVal: parseMinuteVal(minuteStr),
+        text: String(evt[1] || "")
+      };
+    }
+    // Already an object — ensure all required fields exist
+    const minuteStr = String(evt.minute || "");
+    return {
+      minute: minuteStr,
+      minuteVal: Number.isFinite(evt.minuteVal) ? evt.minuteVal : parseMinuteVal(minuteStr),
+      text: String(evt.text || "")
+    };
+  });
+
+  // --- readTimeMinutes: parse from readTime string if numeric field missing ---
+  let readTimeMinutes = Number(match.readTimeMinutes);
+  if (!Number.isFinite(readTimeMinutes) || readTimeMinutes <= 0) {
+    const parsed = String(match.readTime || "").match(/(\d+)/);
+    readTimeMinutes = parsed ? Number(parsed[1]) : 3;
+  }
+
+  // --- relatedCount: backward compat with old 'related' field ---
+  const relatedCount = Number(match.relatedCount ?? match.related ?? 0);
+
+  return {
+    articleIntro:
+      "Bài phân tích được sinh hoặc biên tập từ database trận đấu: metadata, lineup, sự kiện, thống kê nâng cao, transcript và các đoạn highlight đã được index theo thời gian.",
+    articleNote:
+      "Với video 90 phút, frontend chỉ nên preload metadata, phát qua HLS/DASH adaptive streaming, chia chapter theo event, và cho agent trả lời kèm deep link tới timestamp.",
+    ...match,
+    // Normalized / canonical fields (override spread above)
+    relatedCount,
+    readTimeMinutes,
+    source: match.source ?? null,
+    stats: match.stats || { possession: [50, 50], shots: [0, 0], xg: [0, 0] },
+    chapters: Array.isArray(match.chapters) ? match.chapters : [],
+    events
+  };
+}
+
 
 function displayStatus(value) {
   const label = String(value || "").trim();
@@ -552,19 +840,6 @@ function saveMatches() {
   cacheMatches(matches, true);
 }
 
-function normalizeMatch(match) {
-  return {
-    articleIntro:
-      "Bài phân tích được sinh hoặc biên tập từ database trận đấu: metadata, lineup, sự kiện, thống kê nâng cao, transcript và các đoạn highlight đã được index theo thời gian.",
-    articleNote:
-      "Với video 90 phút, frontend chỉ nên preload metadata, phát qua HLS/DASH adaptive streaming, chia chapter theo event, và cho agent trả lời kèm deep link tới timestamp.",
-    ...match,
-    related: Number(match.related || 0),
-    stats: match.stats || { possession: [50, 50], shots: [0, 0], xg: [0, 0] },
-    chapters: Array.isArray(match.chapters) ? match.chapters : [],
-    events: Array.isArray(match.events) ? match.events : []
-  };
-}
 
 function getLeagueTheme(league) {
   return LEAGUE_THEMES[league] || DEFAULT_LEAGUE_THEME;
@@ -614,18 +889,7 @@ function renderTeamAbbr(name) {
   return `<span class="team-code" title="${escapeAttr(name)}">${escapeHtml(teamCode(name))}</span>`;
 }
 
-function renderScoreCard(match, index) {
-  const style = buildLeagueStyle(match.league, index * 0.04);
-  return `
-    <a class="score-card" href="#/match/${match.id}" style="${style}">
-      <span>${escapeHtml(match.league)} · ${escapeHtml(displayStatus(match.status))}</span>
-      <div class="score-line">
-        <div>${renderTeamAbbr(match.home)}</div>
-        <b>${escapeHtml(match.score)}</b>
-        <div>${renderTeamAbbr(match.away)}</div>
-      </div>
-    </a>`;
-}
+
 
 function renderMatchCard(match, index) {
   const style = buildLeagueStyle(match.league, index * 0.06);
@@ -638,7 +902,7 @@ function renderMatchCard(match, index) {
         <p>${escapeHtml(displayText(match.summary))}</p>
         <div class="meta-row">
           <span>${escapeHtml(match.readTime)}</span>
-          <span>${match.related} ${escapeHtml(t("relatedLabel"))}</span>
+          <span>${match.relatedCount} ${escapeHtml(t("relatedLabel"))}</span>
         </div>
       </div>
     </a>`;
@@ -659,7 +923,7 @@ function renderHotItem(match, index) {
 function renderHome() {
   updateRoleBadge();
   const view = homeTemplate.content.cloneNode(true);
-  const sortedMatches = getSortedMatches(matches);
+  const sortedMatches = getSortedMatches(matches).map(getTranslatedMatch);
   homeVisibleCount = Math.min(homeVisibleCount, sortedMatches.length || HOME_INITIAL_COUNT);
   const visibleMatches = sortedMatches.slice(0, Math.max(homeVisibleCount, 1));
   const [featured, ...rest] = visibleMatches;
@@ -673,11 +937,6 @@ function renderHome() {
       </section>`;
     return;
   }
-
-  const scoreStripMatches = sortedMatches.slice(0, 12);
-  view.querySelector(".score-strip").innerHTML = scoreStripMatches
-    .map((match, index) => renderScoreCard(match, index))
-    .join("");
 
   const heroNode = view.querySelector(".hero-match");
   heroNode.style.cssText = buildLeagueStyle(featured.league);
@@ -730,10 +989,6 @@ function renderHome() {
     }
   }
 
-  const scoreStrip = app.querySelector(".score-strip");
-  if (scoreStrip) {
-    scoreStrip.setAttribute("aria-label", t("homeScoreStripLabel"));
-  }
   const matchGrid = app.querySelector(".match-grid");
   if (matchGrid) {
     matchGrid.setAttribute("aria-label", t("homeMatchListLabel"));
@@ -750,7 +1005,8 @@ function renderHome() {
 
 function renderLeagues() {
   updateRoleBadge();
-  const grouped = groupBy(matches, (match) => match.league || "Unknown");
+  const translatedMatches = matches.map(getTranslatedMatch);
+  const grouped = groupBy(translatedMatches, (match) => match.league || "Unknown");
   const entries = Object.entries(grouped).sort((a, b) => a[0].localeCompare(b[0]));
   const container = document.createElement("section");
   container.className = "leagues-page";
@@ -953,7 +1209,7 @@ function parseIsoTime(value) {
 function shouldLoadEvents(match) {
   if (!match?.source) return false;
   if (!Array.isArray(match.events) || match.events.length === 0) return true;
-  if (match.events.length === 1 && match.events[0][1] === "Not found.") return true;
+  if (match.events.length === 1 && isMissingText(match.events[0]?.text)) return true;
   return false;
 }
 
@@ -994,20 +1250,25 @@ async function hydrateMatchEvents(match) {
 
 function extractEventsFromRaw(raw) {
   const comments = Array.isArray(raw?.comments) ? raw.comments : [];
+  /** @type {Array<{minuteVal: number, minute: string, text: string}>} */
   const events = [];
 
   comments.forEach((comment) => {
     const type = String(comment?.comments_type || "").trim().toLowerCase();
     if (!EVENT_TYPES.has(type)) return;
-    const minute = parseEventMinute(comment?.time_stamp, comment?.half);
-    if (minute === null) return;
+    const minuteVal = parseEventMinute(comment?.time_stamp, comment?.half);
+    if (minuteVal === null) return;
     const text = String(comment?.comments_text || "").trim();
     if (!text) return;
-    events.push([minute, text]);
+    events.push({ minuteVal, text });
   });
 
-  events.sort((a, b) => a[0] - b[0]);
-  return events.map(([minute, text]) => [`${minute}'`, text]);
+  events.sort((a, b) => a.minuteVal - b.minuteVal);
+  return events.map(({ minuteVal, text }) => ({
+    minute: `${minuteVal}'`,
+    minuteVal,
+    text
+  }));
 }
 
 function parseEventMinute(timeStamp, half) {
@@ -1037,6 +1298,7 @@ function updateTimelineBlock(match) {
     actions.innerHTML = renderTimelineMoreButton(match, false, visibleCount);
   }
   wireTimelineMore(match);
+  wireTimelineEvents(match);
 }
 
 function renderEventsHtml(events, isLoading, visibleCount) {
@@ -1060,11 +1322,21 @@ function renderEventsHtml(events, isLoading, visibleCount) {
   return events
     .slice(0, safeCount)
     .map(
-      ([minute, text]) => `
-        <div class="timeline-event">
-          <div class="minute">${escapeHtml(minute)}</div>
-          <div>${escapeHtml(text)}</div>
-        </div>`
+      (evt) => {
+        const { minute, minuteVal, text } = evt;
+        const isSelected = activeContext && activeContext.type === "event" && activeContext.minute === minuteVal;
+        const className = isSelected ? "timeline-event is-selected-event" : "timeline-event";
+        return `
+          <div class="${className}" data-event-min="${minuteVal}">
+            <div class="minute">${escapeHtml(minute)}</div>
+            <div class="event-desc-row">
+              <span class="event-text-content">${escapeHtml(text)}</span>
+              <button class="event-pin-btn" data-pin-event-minute="${minuteVal}" data-pin-event-text="${escapeAttr(text)}" title="${escapeAttr(t("detailAskAgentEvent"))}" type="button">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              </button>
+            </div>
+          </div>`;
+      }
     )
     .join("");
 }
@@ -1101,8 +1373,9 @@ function getCurrentMatchId() {
 }
 
 function renderDetail(matchId) {
+  activeContext = null;
   updateRoleBadge();
-  const match = matches.find((item) => item.id === matchId) || matches[0];
+  const match = getTranslatedMatch(matches.find((item) => item.id === matchId) || matches[0]);
   if (!match) {
     renderHome();
     return;
@@ -1115,12 +1388,12 @@ function renderDetail(matchId) {
       <header class="article-header">
         ${isAdmin() ? `<div class="admin-inline-toolbar"><a class="ghost-button" href="#/admin/edit/${match.id}">${escapeHtml(t("detailEdit"))}</a></div>` : ""}
         <p class="kicker">${escapeHtml(match.league)} · ${escapeHtml(displayText(match.time))}</p>
-        <h1>${match.title}</h1>
+        <h1>${escapeHtml(match.title)}</h1>
         <p class="dek">${escapeHtml(displayText(match.summary))}</p>
         <div class="meta-row">
           <span>${renderTeamAbbr(match.home)} vs ${renderTeamAbbr(match.away)}</span>
           <span>${match.readTime}</span>
-          <span>${match.related} ${escapeHtml(t("relatedLabel"))}</span>
+          <span>${match.relatedCount} ${escapeHtml(t("relatedLabel"))}</span>
         </div>
       </header>
       <section class="media-stage">
@@ -1133,20 +1406,40 @@ function renderDetail(matchId) {
           ${Array.from({ length: 90 }, (_, index) => {
             const minute = index + 1;
             const chapter = match.chapters.find((item) => Math.abs(item.minute - minute) <= 1);
-            const className = chapter ? (chapter.label.toLowerCase().includes("bàn") ? "marker is-goal" : "marker is-hot") : "marker";
-            return `<button class="${className}" data-minute="${minute}" title="Phút ${minute}"></button>`;
+            const isGoal = chapter && (chapter.label.toLowerCase().includes("bàn") || chapter.label.toLowerCase().includes("goal"));
+            const className = chapter ? (isGoal ? "marker is-goal" : "marker is-hot") : "marker";
+            return `<button class="${className}" data-minute="${minute}" title="${escapeAttr(t("minute"))} ${minute}"></button>`;
           }).join("")}
         </div>
         <div class="chapter-list">
           ${match.chapters
             .map(
               (chapter) => `
-              <button class="chapter-button" data-minute="${chapter.minute}">
-                <span>${chapter.minute}'</span>
-                ${chapter.label}
-              </button>`
+              <div class="chapter-item">
+                <button class="chapter-button" data-minute="${chapter.minute}" type="button">
+                  <span>${chapter.minute}'</span>
+                  ${chapter.label}
+                </button>
+                <button class="chapter-pin-btn" data-pin-chapter="${chapter.minute}" data-pin-label="${escapeAttr(chapter.label)}" title="${escapeAttr(t("detailAskAgentChapter"))}" type="button">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                </button>
+              </div>`
             )
             .join("")}
+        </div>
+        <!-- Custom Segment Action Bar (Replaces Slider) -->
+        <div class="segment-action-bar" id="segmentActionBar">
+          <div class="action-bar-info">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px;vertical-align:middle;color:var(--accent);"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+            <span>${escapeHtml(t("timelineSelectingRange"))} <strong id="selectedRangeText">0 - 15</strong></span>
+          </div>
+          <div class="action-bar-buttons">
+            <button class="cancel-segment-btn" id="cancelSegmentBtn" type="button">${escapeHtml(t("cancel"))}</button>
+            <button class="attach-segment-btn" id="attachSegmentBtn" type="button">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:4px;vertical-align:middle;"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+              ${escapeHtml(t("detailAttachSegment"))}
+            </button>
+          </div>
         </div>
       </section>
       <section class="article-body">
@@ -1182,7 +1475,13 @@ function renderDetail(matchId) {
           <h2>${escapeHtml(t("detailAskAgent"))}</h2>
           <div class="context-pills">
             <span>${match.id}</span>
-            <span id="videoContext">${escapeHtml(t("detailVideoLabel"))} 00:00</span>
+            <div class="timer-context-row">
+              <span id="videoContext">${escapeHtml(t("detailVideoLabel"))} 00:00</span>
+              <button id="pinMomentBtn" class="pin-moment-btn" type="button" title="${escapeAttr(t("detailPinMomentTitle"))}">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:2px;vertical-align:middle;"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+                ${escapeHtml(t("detailPinMoment"))}
+              </button>
+            </div>
             <span>${escapeHtml(t("detailMemoryOn"))}</span>
           </div>
         </div>
@@ -1195,8 +1494,11 @@ function renderDetail(matchId) {
           <button type="button">${escapeHtml(t("detailPromptHighlight"))}</button>
         </div>
         <form class="chat-form" id="chatForm">
-          <textarea id="chatInput" rows="1" placeholder="${escapeAttr(t("detailAskAgent"))}..."></textarea>
-          <button class="send-button" type="submit">${escapeHtml(t("detailSend"))}</button>
+          <div class="chat-context-bar" id="chatContextBar"></div>
+          <div class="chat-composer">
+            <textarea id="chatInput" rows="1" placeholder="${escapeAttr(t("detailAskAgent"))}..."></textarea>
+            <button class="send-button" type="submit">${escapeHtml(t("detailSend"))}</button>
+          </div>
         </form>
       </section>
     </aside>`;
@@ -1250,6 +1552,9 @@ function renderAdmin(matchId = "") {
   }
 
   updateRoleBadge();
+  const uniqueLeagues = Array.from(new Set(matches.map(m => m.league).filter(Boolean))).sort();
+  const leagueOptions = uniqueLeagues.map(l => `<option value="${escapeAttr(l)}">${escapeHtml(l)}</option>`).join("");
+
   const view = adminTemplate.content.cloneNode(true);
   view.querySelector(".admin-page").innerHTML = `
     <section class="admin-dashboard">
@@ -1270,9 +1575,57 @@ function renderAdmin(matchId = "") {
             <span class="accent-bar"></span>
             <h2>${escapeHtml(t("adminListTitle"))}</h2>
           </div>
-          <div class="admin-list">
-            ${matches.map(renderAdminListItem).join("") || `<p class="chat-note">${escapeHtml(t("adminListEmpty"))}</p>`}
+          
+          <div class="admin-controls-card">
+            <div class="admin-search-wrapper">
+              <input type="text" id="adminSearchInput" class="admin-search-input" placeholder="${escapeAttr(t("adminSearchPlaceholder"))}" />
+            </div>
+            
+            <div class="admin-filters-grid">
+              <div class="admin-filter-col">
+                <label for="adminSortSelect">${escapeHtml(t("adminSortLabel"))}</label>
+                <select id="adminSortSelect" class="admin-select-field">
+                  <option value="time-desc">${escapeHtml(t("adminSortNewest"))}</option>
+                  <option value="time-asc">${escapeHtml(t("adminSortOldest"))}</option>
+                  <option value="title-asc">${escapeHtml(t("adminSortTitleAsc"))}</option>
+                  <option value="title-desc">${escapeHtml(t("adminSortTitleDesc"))}</option>
+                  <option value="league-asc">${escapeHtml(t("adminSortLeague"))}</option>
+                </select>
+              </div>
+
+              <div class="admin-filter-col">
+                <label for="adminFilterLeague">${escapeHtml(t("adminDraftLeague"))}</label>
+                <select id="adminFilterLeague" class="admin-select-field">
+                  <option value="all">${escapeHtml(t("adminFilterLeagueAll"))}</option>
+                  ${leagueOptions}
+                </select>
+              </div>
+
+              <div class="admin-filter-col">
+                <label for="adminFilterStatus">${escapeHtml(t("adminFilterStatusLabel"))}</label>
+                <select id="adminFilterStatus" class="admin-select-field">
+                  <option value="all">${escapeHtml(t("adminFilterStatusAll"))}</option>
+                  <option value="Final">${escapeHtml(displayStatus("Final"))}</option>
+                  <option value="Preview">${escapeHtml(displayStatus("Preview"))}</option>
+                  <option value="Analysis">${escapeHtml(displayStatus("Analysis"))}</option>
+                  <option value="Live brief">${escapeHtml(displayStatus("Live brief"))}</option>
+                  <option value="Tactical room">${escapeHtml(displayStatus("Tactical room"))}</option>
+                  <option value="Draft">${escapeHtml(displayStatus("Draft"))}</option>
+                </select>
+              </div>
+
+              <div class="admin-filter-col">
+                <label for="adminGroupSelect">${escapeHtml(t("adminGroupLabel"))}</label>
+                <select id="adminGroupSelect" class="admin-select-field">
+                  <option value="none">${escapeHtml(t("adminGroupNone"))}</option>
+                  <option value="league">${escapeHtml(t("adminGroupLeague"))}</option>
+                  <option value="status">${escapeHtml(t("adminGroupStatus"))}</option>
+                </select>
+              </div>
+            </div>
           </div>
+
+          <div class="admin-list"></div>
         </section>
         <aside class="admin-card admin-help-card">
           <div class="panel-heading">
@@ -1285,75 +1638,18 @@ function renderAdmin(matchId = "") {
     </section>`;
 
   app.replaceChildren(view);
-  wireAdmin();
-  return;
-
-  const current = matches.find((match) => match.id === matchId) || createEmptyMatch();
-  const legacyView = adminTemplate.content.cloneNode(true);
-  view.querySelector(".admin-page").innerHTML = `
-    <section class="admin-dashboard">
-      <div class="admin-topbar">
-        <div>
-          <p class="kicker">Admin dashboard</p>
-          <h1>Quản lý blog trận đấu</h1>
-          <p class="dek">Các thay đổi đang lưu vào localStorage để mô phỏng database.</p>
-        </div>
-        <div class="admin-actions">
-          <a class="ghost-button" href="#/admin/new">Thêm bài</a>
-          <button class="ghost-button" type="button" id="logoutBtn">Logout</button>
-        </div>
-      </div>
-      <div class="admin-layout">
-        <section class="admin-card">
-          <div class="panel-heading">
-            <span class="accent-bar"></span>
-            <h2>Danh sách bài</h2>
-          </div>
-          <div class="admin-list">
-            ${matches.map(renderAdminListItem).join("") || `<p class="chat-note">Chưa có bài nào.</p>`}
-          </div>
-        </section>
-        <form class="admin-editor admin-card" id="matchEditor">
-          <div class="panel-heading">
-            <span class="accent-bar"></span>
-            <h2>${matchId ? "Sửa bài" : "Thêm bài mới"}</h2>
-          </div>
-          ${adminInput("id", "Slug", current.id, "u17-vietnam-australia", Boolean(matchId))}
-          ${adminInput("title", "Tiêu đề", current.title, "Nhận định trận đấu...")}
-          <div class="editor-grid">
-            ${adminInput("league", "Giải đấu", current.league, "Premier League")}
-            ${adminInput("status", "Trạng thái", current.status, "Analysis")}
-            ${adminInput("time", "Thời gian", current.time, "21:30, Chủ nhật")}
-            ${adminInput("score", "Tỷ số", current.score, "0 - 0")}
-            ${adminInput("home", "Đội nhà", current.home, "Home FC")}
-            ${adminInput("away", "Đội khách", current.away, "Away FC")}
-            ${adminInput("readTime", "Thời lượng đọc", current.readTime, "5 phút")}
-            ${adminInput("related", "Số liên quan", current.related, "12", false, "number")}
-          </div>
-          ${adminInput("image", "Ảnh cover URL", current.image, "https://...")}
-          ${adminTextarea("summary", "Tóm tắt card/trang chủ", current.summary)}
-          ${adminTextarea("articleIntro", "Đoạn mở bài chi tiết", current.articleIntro)}
-          ${adminTextarea("articleNote", "Đoạn phân tích/video/context", current.articleNote)}
-          ${adminTextarea("events", "Timeline events JSON", JSON.stringify(current.events, null, 2))}
-          <div class="editor-actions">
-            <button class="pill-button" type="submit">Lưu bài</button>
-            <a class="ghost-button" href="#/match/${current.id || matches[0]?.id || ""}">Xem trang bài</a>
-          </div>
-        </form>
-      </div>
-    </section>`;
-
-  app.replaceChildren(view);
+  renderAdminList();
   wireAdmin();
 }
 
 function renderAdminListItem(match) {
+  const style = buildLeagueStyle(match.league);
   return `
-    <article class="admin-list-item">
-      <img src="${match.image}" alt="" />
+    <article class="admin-list-item" style="${style}">
+      <img src="${escapeAttr(match.image)}" alt="" />
       <div>
-        <h3>${match.title}</h3>
-        <p>${match.league} · ${match.home} vs ${match.away}</p>
+        <h3>${escapeHtml(match.title)}</h3>
+        <p>${escapeHtml(match.league)} · ${escapeHtml(match.home)} vs ${escapeHtml(match.away)}</p>
         <div class="admin-row-actions">
           <a href="#/admin/edit/${match.id}">${escapeHtml(t("adminEdit"))}</a>
           <a href="#/match/${match.id}">${escapeHtml(t("adminView"))}</a>
@@ -1361,6 +1657,76 @@ function renderAdminListItem(match) {
         </div>
       </div>
     </article>`;
+}
+
+function renderAdminList() {
+  const listContainer = document.querySelector(".admin-list");
+  if (!listContainer) return;
+
+  let filtered = matches.filter(match => {
+    const query = (adminSearchQuery || "").toLowerCase().trim();
+    const matchesQuery = !query || 
+      (match.title || "").toLowerCase().includes(query) ||
+      (match.home || "").toLowerCase().includes(query) ||
+      (match.away || "").toLowerCase().includes(query) ||
+      (match.league || "").toLowerCase().includes(query);
+
+    const matchesLeague = adminFilterLeague === "all" || match.league === adminFilterLeague;
+    const matchesStatus = adminFilterStatus === "all" || match.status === adminFilterStatus;
+
+    return matchesQuery && matchesLeague && matchesStatus;
+  });
+
+  filtered.sort((a, b) => {
+    if (adminSortBy === "time-desc") {
+      return getMatchTimeValue(b) - getMatchTimeValue(a);
+    } else if (adminSortBy === "time-asc") {
+      return getMatchTimeValue(a) - getMatchTimeValue(b);
+    } else if (adminSortBy === "title-asc") {
+      return (a.title || "").localeCompare(b.title || "");
+    } else if (adminSortBy === "title-desc") {
+      return (b.title || "").localeCompare(a.title || "");
+    } else if (adminSortBy === "league-asc") {
+      return (a.league || "").localeCompare(b.league || "");
+    }
+    return 0;
+  });
+
+  if (filtered.length === 0) {
+    listContainer.innerHTML = `<p class="chat-note">${escapeHtml(t("adminListEmpty"))}</p>`;
+    return;
+  }
+
+  if (adminGroupBy === "none") {
+    listContainer.innerHTML = filtered.map(renderAdminListItem).join("");
+  } else {
+    const grouped = groupBy(filtered, match => {
+      if (adminGroupBy === "league") {
+        return match.league || "Unknown League";
+      } else {
+        return displayStatus(match.status) || "Draft";
+      }
+    });
+
+    const entries = Object.entries(grouped).sort((a, b) => a[0].localeCompare(b[0]));
+    
+    listContainer.innerHTML = entries.map(([groupName, groupMatches]) => {
+      const isCollapsed = adminCollapsedGroups.has(groupName);
+      const collapsedClass = isCollapsed ? "admin-group-section is-collapsed" : "admin-group-section";
+      const cardsHtml = groupMatches.map(renderAdminListItem).join("");
+      return `
+        <div class="${collapsedClass}" data-group-name="${escapeAttr(groupName)}">
+          <button type="button" class="admin-group-header">
+            <span class="group-title">${escapeHtml(groupName)} <span class="group-count">${groupMatches.length}</span></span>
+            <span class="group-chevron">▼</span>
+          </button>
+          <div class="admin-group-content">
+            ${cardsHtml}
+          </div>
+        </div>
+      `;
+    }).join("");
+  }
 }
 
 function renderInlineEditor(matchId) {
@@ -1410,10 +1776,10 @@ function renderInlineEditor(matchId) {
         <div class="timeline-block editable-events">
           ${match.events
             .map(
-              ([minute, text], index) => `
+              (evt, index) => `
               <div class="timeline-event">
-                <div class="minute" data-event-minute="${index}" contenteditable="true">${escapeHtml(minute)}</div>
-                <div data-event-text="${index}" contenteditable="true">${escapeHtml(text)}</div>
+                <div class="minute" data-event-minute="${index}" contenteditable="true">${escapeHtml(evt.minute)}</div>
+                <div data-event-text="${index}" contenteditable="true">${escapeHtml(evt.text)}</div>
               </div>`
             )
             .join("")}
@@ -1429,7 +1795,7 @@ function renderInlineEditor(matchId) {
         </div>
         ${adminInput("status", t("adminStatus"), match.status, "Analysis")}
         ${adminInput("score", t("adminScore"), match.score, "0 - 0")}
-        ${adminInput("related", t("adminRelated"), match.related, "12", false, "number")}
+        ${adminInput("related", t("adminRelated"), match.relatedCount, "12", false, "number")}
         <div class="editor-actions">
           <button class="pill-button" type="button" id="saveInlineBtn">${escapeHtml(t("adminSave"))}</button>
           <a class="ghost-button" href="#/match/${match.id}">${escapeHtml(t("adminViewUser"))}</a>
@@ -1480,16 +1846,88 @@ function wireAdmin() {
     });
   }
 
-  document.querySelector(".admin-list").addEventListener("click", (event) => {
-    const button = event.target.closest("[data-delete]");
-    if (!button) return;
-    const id = button.dataset.delete;
-    const match = matches.find((item) => item.id === id);
-    if (!match || !confirm(t("adminDeleteConfirm", { title: match.title }))) return;
-    matches = matches.filter((item) => item.id !== id);
-    saveMatches();
-    renderAdmin();
-  });
+  // Search Query Input
+  const searchInput = document.querySelector("#adminSearchInput");
+  if (searchInput) {
+    searchInput.value = adminSearchQuery;
+    searchInput.addEventListener("input", (e) => {
+      adminSearchQuery = e.target.value;
+      renderAdminList();
+    });
+  }
+
+  // Sort Selector
+  const sortSelect = document.querySelector("#adminSortSelect");
+  if (sortSelect) {
+    sortSelect.value = adminSortBy;
+    sortSelect.addEventListener("change", (e) => {
+      adminSortBy = e.target.value;
+      renderAdminList();
+    });
+  }
+
+  // League Filter Selector
+  const leagueSelect = document.querySelector("#adminFilterLeague");
+  if (leagueSelect) {
+    leagueSelect.value = adminFilterLeague;
+    leagueSelect.addEventListener("change", (e) => {
+      adminFilterLeague = e.target.value;
+      renderAdminList();
+    });
+  }
+
+  // Status Filter Selector
+  const statusSelect = document.querySelector("#adminFilterStatus");
+  if (statusSelect) {
+    statusSelect.value = adminFilterStatus;
+    statusSelect.addEventListener("change", (e) => {
+      adminFilterStatus = e.target.value;
+      renderAdminList();
+    });
+  }
+
+  // Group By Selector
+  const groupSelect = document.querySelector("#adminGroupSelect");
+  if (groupSelect) {
+    groupSelect.value = adminGroupBy;
+    groupSelect.addEventListener("change", (e) => {
+      adminGroupBy = e.target.value;
+      renderAdminList();
+    });
+  }
+
+  const listContainer = document.querySelector(".admin-list");
+  if (listContainer) {
+    listContainer.addEventListener("click", (event) => {
+      // Handle collapsible group headers click
+      const header = event.target.closest(".admin-group-header");
+      if (header) {
+        const groupSection = header.closest(".admin-group-section");
+        if (groupSection) {
+          const groupName = groupSection.dataset.groupName;
+          if (adminCollapsedGroups.has(groupName)) {
+            adminCollapsedGroups.delete(groupName);
+            groupSection.classList.remove("is-collapsed");
+          } else {
+            adminCollapsedGroups.add(groupName);
+            groupSection.classList.add("is-collapsed");
+          }
+        }
+        return;
+      }
+
+      // Handle delete button click inside match card
+      const deleteBtn = event.target.closest("[data-delete]");
+      if (deleteBtn) {
+        const id = deleteBtn.dataset.delete;
+        const match = matches.find((item) => item.id === id);
+        if (!match || !confirm(t("adminDeleteConfirm", { title: match.title }))) return;
+        matches = matches.filter((item) => item.id !== id);
+        saveMatches();
+        renderAdmin();
+      }
+    });
+  }
 
   const matchEditor = document.querySelector("#matchEditor");
   if (!matchEditor) return;
@@ -1545,10 +1983,15 @@ function wireInlineEditor(match) {
   document.querySelector("#saveInlineBtn").addEventListener("click", () => {
     const getText = (selector) => document.querySelector(selector)?.textContent.trim() || "";
     const eventMinutes = [...document.querySelectorAll("[data-event-minute]")];
-    const events = eventMinutes.map((minuteNode, index) => [
-      minuteNode.textContent.trim(),
-      document.querySelector(`[data-event-text="${index}"]`)?.textContent.trim() || ""
-    ]);
+    const events = eventMinutes.map((minuteNode, index) => {
+      const minuteStr = minuteNode.textContent.trim();
+      const text = document.querySelector(`[data-event-text="${index}"]`)?.textContent.trim() || "";
+      return {
+        minute: minuteStr,
+        minuteVal: parseMinuteVal(minuteStr),
+        text
+      };
+    });
 
     const next = normalizeMatch({
       ...match,
@@ -1564,7 +2007,7 @@ function wireInlineEditor(match) {
       image: imageInput.value.trim(),
       status: document.querySelector('[name="status"]').value.trim(),
       score: document.querySelector('[name="score"]').value.trim(),
-      related: Number(document.querySelector('[name="related"]').value || 0),
+      relatedCount: Number(document.querySelector('[name="related"]').value || 0),
       events
     });
 
@@ -1578,6 +2021,7 @@ function createEmptyMatch() {
   return normalizeMatch({
     id: "",
     league: "",
+    season: "",
     status: "Draft",
     time: "",
     home: "",
@@ -1587,7 +2031,9 @@ function createEmptyMatch() {
     summary: "",
     image: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&w=1200&q=80",
     readTime: "5 phút",
-    related: 0,
+    readTimeMinutes: 5,
+    relatedCount: 0,
+    source: null,
     stats: { possession: [50, 50], shots: [0, 0], xg: [0, 0] },
     chapters: [],
     events: []
@@ -1629,6 +2075,107 @@ function statRow(label, left, right, suffix) {
     </div>`;
 }
 
+function highlightMarkerBarRange(start, end) {
+  document.querySelectorAll(".marker-bar .marker").forEach((marker) => {
+    const min = Number(marker.dataset.minute);
+    if (min >= start && min <= end) {
+      marker.classList.add("is-selected-range");
+    } else {
+      marker.classList.remove("is-selected-range");
+    }
+  });
+}
+
+function highlightSelectedEventInTimeline(minute) {
+  document.querySelectorAll(".timeline-event").forEach((el) => {
+    if (minute !== null && el.dataset.eventMin === String(minute)) {
+      el.classList.add("is-selected-event");
+    } else {
+      el.classList.remove("is-selected-event");
+    }
+  });
+}
+
+function updateChatContextBar(currentVideoMinute) {
+  const bar = document.querySelector("#chatContextBar");
+  if (!bar) return;
+
+  if (activeContext) {
+    bar.classList.add("is-active");
+    let displayLabel = "";
+
+    if (activeContext.type === "moment") {
+      displayLabel = t("momentPillLabel", { minute: activeContext.minute });
+      highlightMarkerBarRange(-1, -1);
+      highlightSelectedEventInTimeline(null);
+    } else if (activeContext.type === "range") {
+      displayLabel = t("rangePillLabel", { start: activeContext.start, end: activeContext.end });
+      highlightMarkerBarRange(activeContext.start, activeContext.end);
+      highlightSelectedEventInTimeline(null);
+    } else if (activeContext.type === "chapter") {
+      displayLabel = t("chapterPillLabel", { label: activeContext.label });
+      highlightMarkerBarRange(-1, -1);
+      highlightSelectedEventInTimeline(null);
+    } else if (activeContext.type === "event") {
+      displayLabel = t("eventPillLabel", { minute: activeContext.minute });
+      highlightMarkerBarRange(-1, -1);
+      highlightSelectedEventInTimeline(activeContext.minute);
+    }
+
+    bar.innerHTML = `
+      <span class="chat-context-pill">
+        ${escapeHtml(displayLabel)}
+      </span>
+      <button type="button" class="chat-context-clear-btn" title="${escapeAttr(t("clearPinTitle"))}">&times;</button>
+    `;
+
+    const clearBtn = bar.querySelector(".chat-context-clear-btn");
+    if (clearBtn) {
+      clearBtn.addEventListener("click", () => {
+        activeContext = null;
+        updateChatContextBar(currentVideoMinute);
+        const actionBar = document.querySelector("#segmentActionBar");
+        if (actionBar) actionBar.classList.remove("is-active");
+      });
+    }
+  } else {
+    // Default dynamic time context
+    const min = Number.isFinite(currentVideoMinute) ? currentVideoMinute : 0;
+    const label = t("defaultTimePillLabel", { minute: String(Math.floor(min)).padStart(2, "0") });
+    bar.classList.add("is-active");
+    bar.innerHTML = `
+      <span class="chat-context-pill is-default" style="color: var(--muted); font-weight: normal;">
+        ${escapeHtml(label)}
+      </span>
+    `;
+    highlightMarkerBarRange(-1, -1);
+    highlightSelectedEventInTimeline(null);
+  }
+}
+
+function wireTimelineEvents(match) {
+  document.querySelectorAll(".event-pin-btn").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const minute = Number(btn.dataset.pinEventMinute);
+      const text = btn.dataset.pinEventText;
+      activeContext = {
+        type: "event",
+        minute,
+        text
+      };
+      const video = document.querySelector("#matchVideo");
+      const currentMin = video ? Math.floor(video.currentTime / 60) : 0;
+      updateChatContextBar(currentMin);
+
+      const chatInput = document.querySelector("#chatInput");
+      if (chatInput) {
+        chatInput.focus();
+      }
+    });
+  });
+}
+
 function wireDetail(match) {
   const video = document.querySelector("#matchVideo");
   const videoContext = document.querySelector("#videoContext");
@@ -1637,9 +2184,137 @@ function wireDetail(match) {
   const chatLog = document.querySelector("#chatLog");
   const quickPrompts = document.querySelector("#quickPrompts");
 
+  let isTimelineDragging = false;
+  let timelineStartMin = 0;
+  let timelineEndMin = 0;
+  let dragOccurred = false;
+
+  let startMin = 0;
+  let endMin = 15;
+
+  const actionBar = document.querySelector("#segmentActionBar");
+  const rangeText = document.querySelector("#selectedRangeText");
+  const cancelBtn = document.querySelector("#cancelSegmentBtn");
+  const attachBtn = document.querySelector("#attachSegmentBtn");
+
+  function showActionBar(start, end) {
+    if (!actionBar || !rangeText) return;
+    startMin = start;
+    endMin = end;
+    rangeText.textContent = `${start} - ${end}`;
+    actionBar.classList.add("is-active");
+    highlightMarkerBarRange(start, end);
+  }
+
+  function hideActionBar() {
+    if (!actionBar) return;
+    actionBar.classList.remove("is-active");
+  }
+
+  const markers = document.querySelectorAll(".marker-bar .marker");
+
+  markers.forEach((marker) => {
+    marker.addEventListener("mousedown", (e) => {
+      if (e.button !== 0) return;
+      isTimelineDragging = true;
+      dragOccurred = false;
+      timelineStartMin = Number(marker.dataset.minute);
+      timelineEndMin = timelineStartMin;
+      e.preventDefault();
+    });
+
+    marker.addEventListener("mouseenter", () => {
+      if (!isTimelineDragging) return;
+      dragOccurred = true;
+      timelineEndMin = Number(marker.dataset.minute);
+
+      const start = Math.min(timelineStartMin, timelineEndMin);
+      const end = Math.max(timelineStartMin, timelineEndMin);
+
+      showActionBar(start, end);
+    });
+  });
+
+  const markerBar = document.querySelector(".marker-bar");
+  if (markerBar) {
+    markerBar.addEventListener("touchstart", (e) => {
+      if (e.touches.length !== 1) return;
+      const touch = e.touches[0];
+      const target = document.elementFromPoint(touch.clientX, touch.clientY);
+      const marker = target ? target.closest(".marker") : null;
+      if (marker) {
+        isTimelineDragging = true;
+        dragOccurred = false;
+        timelineStartMin = Number(marker.dataset.minute);
+        timelineEndMin = timelineStartMin;
+      }
+    }, { passive: true });
+
+    markerBar.addEventListener("touchmove", (e) => {
+      if (!isTimelineDragging || e.touches.length !== 1) return;
+      const touch = e.touches[0];
+      const target = document.elementFromPoint(touch.clientX, touch.clientY);
+      const marker = target ? target.closest(".marker") : null;
+      if (marker) {
+        dragOccurred = true;
+        timelineEndMin = Number(marker.dataset.minute);
+        const start = Math.min(timelineStartMin, timelineEndMin);
+        const end = Math.max(timelineStartMin, timelineEndMin);
+
+        showActionBar(start, end);
+      }
+    }, { passive: true });
+
+    const onTouchEnd = () => {
+      if (!isTimelineDragging) return;
+      isTimelineDragging = false;
+      const finalStart = Math.min(timelineStartMin, timelineEndMin);
+      const finalEnd = Math.max(timelineStartMin, timelineEndMin);
+      if (dragOccurred && finalStart !== finalEnd) {
+        showActionBar(finalStart, finalEnd);
+      }
+    };
+    markerBar.addEventListener("touchend", onTouchEnd);
+  }
+
+  const onGlobalMouseUp = () => {
+    if (!isTimelineDragging) return;
+    isTimelineDragging = false;
+
+    const finalStart = Math.min(timelineStartMin, timelineEndMin);
+    const finalEnd = Math.max(timelineStartMin, timelineEndMin);
+
+    if (dragOccurred && finalStart !== finalEnd) {
+      showActionBar(finalStart, finalEnd);
+    }
+  };
+
+  if (window._onGlobalMouseUpCleanup) {
+    window._onGlobalMouseUpCleanup();
+  }
+  window._onGlobalMouseUpCleanup = () => {
+    window.removeEventListener("mouseup", onGlobalMouseUp);
+  };
+  window.addEventListener("mouseup", onGlobalMouseUp);
+
+  // Wire click to jump AND cancel range selection ONLY if a drag selection did not occur
   document.querySelectorAll("[data-minute]").forEach((button) => {
-    button.addEventListener("click", () => {
+    button.addEventListener("click", (e) => {
+      if (dragOccurred) {
+        e.preventDefault();
+        e.stopPropagation();
+        return;
+      }
+
+      // If clicked another single marker: cancel/clear range selection context!
+      hideActionBar();
+      highlightMarkerBarRange(-1, -1);
+      if (activeContext && activeContext.type === "range") {
+        activeContext = null;
+      }
       const minute = Number(button.dataset.minute);
+      updateChatContextBar(minute);
+
       video.currentTime = Math.min(video.duration || 5400, minute * 60);
       video.play().catch(() => {});
       updateVideoContext(minute);
@@ -1647,7 +2322,9 @@ function wireDetail(match) {
   });
 
   video.addEventListener("timeupdate", () => {
-    updateVideoContext(Math.floor(video.currentTime / 60));
+    const currentMin = Math.floor(video.currentTime / 60);
+    updateVideoContext(currentMin);
+    updateChatContextBar(currentMin);
   });
 
   chatForm.addEventListener("submit", async (event) => {
@@ -1678,6 +2355,72 @@ function wireDetail(match) {
     chatInput.focus();
   });
 
+  // Pin current moment button wiring
+  const pinMomentBtn = document.querySelector("#pinMomentBtn");
+  if (pinMomentBtn) {
+    pinMomentBtn.addEventListener("click", () => {
+      const minute = Math.floor(video.currentTime / 60);
+      activeContext = {
+        type: "moment",
+        minute: minute
+      };
+      updateChatContextBar(minute);
+      chatInput.focus();
+    });
+  }
+
+  // Attach button inside ActionBar
+  if (attachBtn) {
+    attachBtn.addEventListener("click", () => {
+      activeContext = {
+        type: "range",
+        start: startMin,
+        end: endMin
+      };
+      const currentMin = Math.floor(video.currentTime / 60);
+      updateChatContextBar(currentMin);
+      hideActionBar();
+      chatInput.focus();
+    });
+  }
+
+  // Cancel button inside ActionBar
+  if (cancelBtn) {
+    cancelBtn.addEventListener("click", () => {
+      hideActionBar();
+      highlightMarkerBarRange(-1, -1);
+      if (activeContext && activeContext.type === "range") {
+        activeContext = null;
+        const currentMin = Math.floor(video.currentTime / 60);
+        updateChatContextBar(currentMin);
+      }
+    });
+  }
+
+  // Quick chapter pin buttons wiring
+  document.querySelectorAll(".chapter-pin-btn").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const minute = Number(btn.dataset.pinChapter);
+      const label = btn.dataset.pinLabel;
+      activeContext = {
+        type: "chapter",
+        minute,
+        label
+      };
+      const currentMin = Math.floor(video.currentTime / 60);
+      updateChatContextBar(currentMin);
+      chatInput.focus();
+    });
+  });
+
+  // Wire initial timeline events
+  wireTimelineEvents(match);
+
+  // Initialize chat context bar with passive dynamic time
+  const currentMin = Math.floor(video.currentTime / 60);
+  updateChatContextBar(currentMin);
+
   function updateVideoContext(minute) {
     const safeMinute = Number.isFinite(minute) ? Math.max(0, minute) : 0;
     videoContext.textContent = `${t("detailVideoLabel")} ${String(Math.floor(safeMinute / 60)).padStart(2, "0")}:${String(safeMinute % 60).padStart(2, "0")}`;
@@ -1701,14 +2444,58 @@ function appendMessage(chatLog, text, role) {
 }
 
 function buildAgentContext(match, currentMinute, userMessage) {
-  const nearbyEvents = match.events.filter(([minute]) => {
-    const value = Number(minute.replace("'", ""));
-    return Math.abs(value - currentMinute) <= 12;
-  });
+  let contextInfo = null;
+  let queryMinute = currentMinute;
+
+  if (activeContext) {
+    if (activeContext.type === "moment") {
+      queryMinute = activeContext.minute;
+      contextInfo = {
+        type: "moment",
+        label: `Phút ${activeContext.minute}`,
+        minute: activeContext.minute
+      };
+    } else if (activeContext.type === "range") {
+      queryMinute = Math.floor((activeContext.start + activeContext.end) / 2);
+      contextInfo = {
+        type: "range",
+        label: `Phút ${activeContext.start} - ${activeContext.end}`,
+        start: activeContext.start,
+        end: activeContext.end
+      };
+    } else if (activeContext.type === "chapter") {
+      queryMinute = activeContext.minute;
+      contextInfo = {
+        type: "chapter",
+        label: `Chương: ${activeContext.label} (Phút ${activeContext.minute})`,
+        minute: activeContext.minute
+      };
+    } else if (activeContext.type === "event") {
+      queryMinute = activeContext.minute;
+      contextInfo = {
+        type: "event",
+        label: `Sự kiện: ${activeContext.text} (Phút ${activeContext.minute})`,
+        minute: activeContext.minute,
+        text: activeContext.text
+      };
+    }
+  }
+
+  let nearbyEvents = [];
+  if (activeContext && activeContext.type === "range") {
+    nearbyEvents = match.events.filter((evt) =>
+      evt.minuteVal >= activeContext.start && evt.minuteVal <= activeContext.end
+    );
+  } else {
+    nearbyEvents = match.events.filter((evt) =>
+      Math.abs(evt.minuteVal - queryMinute) <= 12
+    );
+  }
 
   return {
     route: "match-detail",
     userMessage,
+    activeContext: contextInfo,
     match: {
       id: match.id,
       title: match.title,
@@ -1717,7 +2504,7 @@ function buildAgentContext(match, currentMinute, userMessage) {
       stats: match.stats
     },
     media: {
-      currentMinute,
+      currentMinute: queryMinute,
       nearbyEvents,
       retrievalWindowSeconds: 180
     },
@@ -1731,15 +2518,49 @@ function buildAgentContext(match, currentMinute, userMessage) {
 
 async function askAgent(packet) {
   await new Promise((resolve) => setTimeout(resolve, 350));
+  const ctx = packet.activeContext;
+  let contextIntro = "";
+  const isVi = currentLanguage === "vi";
+
+  if (ctx) {
+    if (ctx.type === "moment") {
+      contextIntro = isVi
+        ? `Tôi đang phân tích mốc thời gian bạn đã ghim tại phút ${ctx.minute}. `
+        : `I am analyzing the pinned timestamp at minute ${ctx.minute}. `;
+    } else if (ctx.type === "range") {
+      contextIntro = isVi
+        ? `Tôi đang xem xét phân đoạn trận đấu từ phút ${ctx.start} đến phút ${ctx.end} theo yêu cầu của bạn. `
+        : `I am looking at the match segment from minute ${ctx.start} to minute ${ctx.end} per your request. `;
+    } else if (ctx.type === "chapter") {
+      contextIntro = isVi
+        ? `Tôi đang phân tích chương "${ctx.label}" được ghim. `
+        : `I am analyzing the pinned chapter "${ctx.label}". `;
+    } else if (ctx.type === "event") {
+      contextIntro = isVi
+        ? `Tôi đang phân tích sự kiện diễn ra tại phút ${ctx.minute}: "${ctx.text}". `
+        : `I am analyzing the event at minute ${ctx.minute}: "${ctx.text}". `;
+    }
+  } else {
+    contextIntro = isVi
+      ? `Tôi đang theo dõi trận đấu tại mốc phát sóng phút ${packet.media.currentMinute}. `
+      : `I am following the match at playback minute ${packet.media.currentMinute}. `;
+  }
+
   const eventText = packet.media.nearbyEvents.length
-    ? t("mockAgentEvent", { events: packet.media.nearbyEvents.map((item) => item.join(" ")).join(" ") })
-    : t("mockAgentNoEvent");
-  return t("mockAgent", {
-    teams: packet.match.teams.join(" vs "),
-    score: packet.match.score,
-    minute: packet.media.currentMinute,
-    event: eventText
-  });
+    ? (isVi
+        ? `Các sự kiện ghi nhận trong khoảng thời gian này là: ${packet.media.nearbyEvents.map((evt) => `${evt.minute} ${evt.text}`).join("; ")}.`
+        : `Events in this window: ${packet.media.nearbyEvents.map((evt) => `${evt.minute} ${evt.text}`).join("; ")}.`)
+    : (isVi
+        ? `Không có sự kiện đặc biệt nào được ghi nhận xung quanh khoảng thời gian này.`
+        : `No significant events recorded around this time.`);
+
+  if (isVi) {
+    return `${contextIntro}${eventText}\n\n[Agent]: Dựa trên số liệu thống kê trận đấu giữa ${packet.match.teams.join(" và ")} (Tỷ số: ${packet.match.score}), đây là khoảng thời gian có tính chất chiến thuật cao. ${
+      packet.media.nearbyEvents.length ? "Bạn có muốn tôi đi sâu phân tích một trong các tình huống trên không?" : "Bạn có câu hỏi nào cụ thể về các pha bóng diễn ra lúc này không?"
+    }`;
+  } else {
+    return `${contextIntro}${eventText}\n\n[Agent]: Based on the match data for ${packet.match.teams.join(" vs ")} (${packet.match.score}), this segment represents a key tactical phase. Let me know if you want a detailed breakdown of these actions!`;
+  }
 }
 
 function router() {
