@@ -1485,15 +1485,7 @@ function renderDetail(matchId) {
             <source src="${escapeAttr(videoUrl)}" type="${escapeAttr(videoType)}" />
           </video>
         </div>
-        <div class="marker-bar" aria-label="Timeline video">
-          ${Array.from({ length: 90 }, (_, index) => {
-            const minute = index + 1;
-            const chapter = match.chapters.find((item) => Math.abs(item.minute - minute) <= 1);
-            const isGoal = chapter && (chapter.label.toLowerCase().includes("bàn") || chapter.label.toLowerCase().includes("goal"));
-            const className = chapter ? (isGoal ? "marker is-goal" : "marker is-hot") : "marker";
-            return `<button class="${className}" data-minute="${minute}" title="${escapeAttr(t("minute"))} ${minute}"></button>`;
-          }).join("")}
-        </div>
+        <div class="marker-bar" aria-label="Timeline video"></div>
         <div class="chapter-list">
           ${match.chapters
             .map(
@@ -2407,6 +2399,7 @@ function wireDetail(match) {
   const rangeText = document.querySelector("#selectedRangeText");
   const cancelBtn = document.querySelector("#cancelSegmentBtn");
   const attachBtn = document.querySelector("#attachSegmentBtn");
+  const markerBar = document.querySelector(".marker-bar");
 
   function showActionBar(start, end) {
     if (!actionBar || !rangeText) return;
@@ -2425,37 +2418,84 @@ function wireDetail(match) {
   function seekToSegmentStart(minute) {
     if (!video || !Number.isFinite(minute)) return;
     const targetMinute = Math.max(0, minute);
-    video.currentTime = Math.min(video.duration || 5400, targetMinute * 60);
+    const durationSeconds = Number.isFinite(video.duration) && video.duration > 0
+      ? video.duration
+      : targetMinute * 60;
+    video.currentTime = Math.min(durationSeconds, targetMinute * 60);
     updateVideoContext(targetMinute);
     updateChatContextBar(targetMinute);
   }
 
-  const markers = document.querySelectorAll(".marker-bar .marker");
+  function jumpToMinute(minute) {
+    if (!video || !Number.isFinite(minute)) return;
+    hideActionBar();
+    highlightMarkerBarRange(-1, -1);
+    if (activeContext && activeContext.type === "range") {
+      activeContext = null;
+    }
+    updateChatContextBar(minute);
+    seekToSegmentStart(minute);
+    video.play().catch(() => {});
+  }
 
-  markers.forEach((marker) => {
-    marker.addEventListener("mousedown", (e) => {
-      if (e.button !== 0) return;
-      isTimelineDragging = true;
-      dragOccurred = false;
-      timelineStartMin = Number(marker.dataset.minute);
-      timelineEndMin = timelineStartMin;
-      e.preventDefault();
+  function getVideoTimelineMinutes() {
+    if (video && Number.isFinite(video.duration) && video.duration > 0) {
+      return Math.max(1, Math.ceil(video.duration / 60));
+    }
+    return 0;
+  }
+
+  function renderTimelineMarkers() {
+    if (!markerBar) return;
+    const totalMinutes = getVideoTimelineMinutes();
+    markerBar.style.setProperty("--timeline-minutes", String(totalMinutes || 1));
+    markerBar.innerHTML = Array.from({ length: totalMinutes }, (_, index) => {
+      const minute = index + 1;
+      const chapter = match.chapters.find((item) => Math.abs(item.minute - minute) <= 1);
+      const isGoal = chapter && (chapter.label.toLowerCase().includes("bàn") || chapter.label.toLowerCase().includes("goal"));
+      const className = chapter ? (isGoal ? "marker is-goal" : "marker is-hot") : "marker";
+      return `<button class="${className}" data-minute="${minute}" title="${escapeAttr(t("minute"))} ${minute}"></button>`;
+    }).join("");
+    if (actionBar && actionBar.classList.contains("is-active")) {
+      highlightMarkerBarRange(startMin, endMin);
+    }
+
+    markerBar.querySelectorAll(".marker").forEach((marker) => {
+      marker.addEventListener("mousedown", (e) => {
+        if (e.button !== 0) return;
+        isTimelineDragging = true;
+        dragOccurred = false;
+        timelineStartMin = Number(marker.dataset.minute);
+        timelineEndMin = timelineStartMin;
+        e.preventDefault();
+      });
+
+      marker.addEventListener("mouseenter", () => {
+        if (!isTimelineDragging) return;
+        dragOccurred = true;
+        timelineEndMin = Number(marker.dataset.minute);
+
+        const start = Math.min(timelineStartMin, timelineEndMin);
+        const end = Math.max(timelineStartMin, timelineEndMin);
+
+        showActionBar(start, end);
+      });
     });
+  }
 
-    marker.addEventListener("mouseenter", () => {
-      if (!isTimelineDragging) return;
-      dragOccurred = true;
-      timelineEndMin = Number(marker.dataset.minute);
-
-      const start = Math.min(timelineStartMin, timelineEndMin);
-      const end = Math.max(timelineStartMin, timelineEndMin);
-
-      showActionBar(start, end);
-    });
-  });
-
-  const markerBar = document.querySelector(".marker-bar");
   if (markerBar) {
+    markerBar.addEventListener("click", (e) => {
+      const marker = e.target.closest(".marker");
+      if (!marker) return;
+      if (dragOccurred) {
+        e.preventDefault();
+        e.stopPropagation();
+        dragOccurred = false;
+        return;
+      }
+      jumpToMinute(Number(marker.dataset.minute));
+    });
+
     markerBar.addEventListener("touchstart", (e) => {
       if (e.touches.length !== 1) return;
       const touch = e.touches[0];
@@ -2491,7 +2531,6 @@ function wireDetail(match) {
       const finalEnd = Math.max(timelineStartMin, timelineEndMin);
       if (dragOccurred && finalStart !== finalEnd) {
         showActionBar(finalStart, finalEnd);
-        seekToSegmentStart(finalStart);
       }
     };
     markerBar.addEventListener("touchend", onTouchEnd);
@@ -2506,7 +2545,6 @@ function wireDetail(match) {
 
     if (dragOccurred && finalStart !== finalEnd) {
       showActionBar(finalStart, finalEnd);
-      seekToSegmentStart(finalStart);
     }
   };
 
@@ -2517,28 +2555,22 @@ function wireDetail(match) {
     window.removeEventListener("mouseup", onGlobalMouseUp);
   };
   window.addEventListener("mouseup", onGlobalMouseUp);
+  video.addEventListener("loadedmetadata", renderTimelineMarkers);
+  video.addEventListener("durationchange", renderTimelineMarkers);
+  renderTimelineMarkers();
 
-  // Wire click to jump AND cancel range selection ONLY if a drag selection did not occur
-  document.querySelectorAll("[data-minute]").forEach((button) => {
+  // Wire chapter clicks. Marker clicks are delegated on the dynamic marker bar.
+  document.querySelectorAll(".chapter-button[data-minute]").forEach((button) => {
     button.addEventListener("click", (e) => {
       if (dragOccurred) {
         e.preventDefault();
         e.stopPropagation();
+        dragOccurred = false;
         return;
       }
 
-      // If clicked another single marker: cancel/clear range selection context!
-      hideActionBar();
-      highlightMarkerBarRange(-1, -1);
-      if (activeContext && activeContext.type === "range") {
-        activeContext = null;
-      }
       const minute = Number(button.dataset.minute);
-      updateChatContextBar(minute);
-
-      video.currentTime = Math.min(video.duration || 5400, minute * 60);
-      video.play().catch(() => {});
-      updateVideoContext(minute);
+      jumpToMinute(minute);
     });
   });
 
@@ -2649,8 +2681,7 @@ function wireDetail(match) {
         start: startMin,
         end: endMin
       };
-      const currentMin = Math.floor(video.currentTime / 60);
-      updateChatContextBar(currentMin);
+      seekToSegmentStart(startMin);
       hideActionBar();
       chatInput.focus();
     });

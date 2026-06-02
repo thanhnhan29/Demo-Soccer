@@ -768,7 +768,7 @@ textarea {
 /* Timeline/Marker Bar below Video */
 .marker-bar {
   display: grid;
-  grid-template-columns: repeat(90, 1fr);
+  grid-template-columns: repeat(var(--timeline-minutes, 1), 1fr);
   gap: 2px;
   padding: 12px;
   background: #1a1e1c;
