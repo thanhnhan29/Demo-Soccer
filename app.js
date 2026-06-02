@@ -127,6 +127,7 @@ const seedMatches = [
 
 const HOME_INITIAL_COUNT = 7;
 const HOME_STEP = 6;
+const DEFAULT_VIDEO_URL = "http://localhost:8008/videos/fc-barcelona-royal-antwerp_1.mp4";
 const DEFAULT_AGENT_API_URL = (() => {
   const rawHost = window.location.hostname || "localhost";
   const host = rawHost === "0.0.0.0" ? "127.0.0.1" : rawHost;
@@ -307,6 +308,7 @@ const COPY = {
     adminViewUser: "Xem bản người dùng",
     adminDashboard: "Bảng điều khiển",
     adminCoverLabel: "Đường dẫn ảnh bìa",
+    adminVideoLabel: "Đường dẫn video",
     notFound: "Chưa có dữ liệu.",
     chatAgentIntro:
       "Mình đang giữ thông tin trận đấu, dòng thời gian và ngữ cảnh video hiện tại. Bạn có thể hỏi về chiến thuật, cầu thủ hoặc yêu cầu nhảy tới pha bóng đang xem.",
@@ -439,6 +441,7 @@ const COPY = {
     adminViewUser: "View user",
     adminDashboard: "Dashboard",
     adminCoverLabel: "Cover image URL",
+    adminVideoLabel: "Video URL",
     notFound: "Not found.",
     chatAgentIntro:
       "I am holding the match packet, timeline, and current video context. Ask about tactics, players, or jump to highlights.",
@@ -820,6 +823,7 @@ function normalizeMatch(match) {
     relatedCount,
     readTimeMinutes,
     source: match.source !== undefined && match.source !== null ? match.source : null,
+    videoUrl: getMatchVideoUrl(match),
     stats: match.stats || { possession: [50, 50], shots: [0, 0], xg: [0, 0] },
     chapters: Array.isArray(match.chapters) ? match.chapters : [],
     events
@@ -842,6 +846,29 @@ function isMissingText(value) {
 
 function displayText(value) {
   return isMissingText(value) ? t("notFound") : String(value);
+}
+
+function getMatchVideoUrl(match) {
+  const candidates = [
+    match && match.videoUrl,
+    match && match.media && match.media.videoUrl,
+    match && match.video,
+    DEFAULT_VIDEO_URL
+  ];
+  for (const candidate of candidates) {
+    const url = String(candidate || "").trim();
+    if (url) return url;
+  }
+  return DEFAULT_VIDEO_URL;
+}
+
+function getVideoMimeType(videoUrl) {
+  const cleanUrl = String(videoUrl || "").split(/[?#]/, 1)[0].toLowerCase();
+  if (cleanUrl.endsWith(".webm")) return "video/webm";
+  if (cleanUrl.endsWith(".mov")) return "video/quicktime";
+  if (cleanUrl.endsWith(".m3u8")) return "application/vnd.apple.mpegurl";
+  if (cleanUrl.endsWith(".mpd")) return "application/dash+xml";
+  return "video/mp4";
 }
 
 function readStoredMatches() {
@@ -1436,6 +1463,8 @@ function renderDetail(matchId) {
   updateRoleBadge();
   const shouldLoad = shouldLoadEvents(match);
   const visibleCount = getTimelineCount(match);
+  const videoUrl = getMatchVideoUrl(match);
+  const videoType = getVideoMimeType(videoUrl);
   const view = detailTemplate.content.cloneNode(true);
   view.querySelector(".detail-page").innerHTML = `
     <div class="article-main">
@@ -1452,8 +1481,8 @@ function renderDetail(matchId) {
       </header>
       <section class="media-stage">
         <div class="video-wrap">
-          <video id="matchVideo" controls preload="none" poster="${match.image}">
-            <source src="http://localhost:8008/videos/fc-barcelona-royal-antwerp_1.mp4" type="video/mp4" />
+          <video id="matchVideo" controls preload="metadata" poster="${match.image}">
+            <source src="${escapeAttr(videoUrl)}" type="${escapeAttr(videoType)}" />
           </video>
         </div>
         <div class="marker-bar" aria-label="Timeline video">
@@ -1822,6 +1851,10 @@ function renderInlineEditor(matchId) {
               <span>${escapeHtml(t("adminCoverLabel"))}</span>
               <input id="inlineImage" value="${escapeAttr(match.image)}" />
             </label>
+            <label>
+              <span>${escapeHtml(t("adminVideoLabel"))}</span>
+              <input id="inlineVideo" value="${escapeAttr(getMatchVideoUrl(match))}" />
+            </label>
           </div>
         </div>
       </section>
@@ -2029,6 +2062,7 @@ function wireAdmin() {
 
 function wireInlineEditor(match) {
   const imageInput = document.querySelector("#inlineImage");
+  const videoInput = document.querySelector("#inlineVideo");
   const cover = document.querySelector(".edit-cover");
   imageInput.addEventListener("input", () => {
     cover.style.backgroundImage = `url('${imageInput.value}')`;
@@ -2063,6 +2097,7 @@ function wireInlineEditor(match) {
       articleIntro: getText('[data-edit="articleIntro"]'),
       articleNote: getText('[data-edit="articleNote"]'),
       image: imageInput.value.trim(),
+      videoUrl: videoInput.value.trim() || DEFAULT_VIDEO_URL,
       status: document.querySelector('[name="status"]').value.trim(),
       score: document.querySelector('[name="score"]').value.trim(),
       relatedCount: Number(document.querySelector('[name="related"]').value || 0),
@@ -2088,6 +2123,7 @@ function createEmptyMatch() {
     title: "",
     summary: "",
     image: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&w=1200&q=80",
+    videoUrl: DEFAULT_VIDEO_URL,
     readTime: "5 phút",
     readTimeMinutes: 5,
     relatedCount: 0,

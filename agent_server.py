@@ -23,7 +23,7 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
 from socketserver import ThreadingMixIn
 from typing import Any
-from urllib.parse import urlparse
+from urllib.parse import unquote, urlparse
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
@@ -36,6 +36,7 @@ FALLBACK_API_KEY = "EMPTY"
 AGENT_MAX_TOKENS = int(os.getenv("AGENT_MAX_TOKENS", "768"))
 INCLUDE_DEBUG = os.getenv("AGENT_INCLUDE_DEBUG", "").lower() in {"1", "true", "yes"}
 DEMO_ROOT = Path(__file__).resolve().parent
+VIDEO_CHUNK_SIZE = int(os.getenv("VIDEO_CHUNK_SIZE", str(1024 * 1024)))
 # Keep the default LLM log outside Demo-Soccer. Browser live-reload servers often
 # watch the web root and refresh the page whenever logs inside it change.
 DEFAULT_LLM_LOG_PATH = Path(os.getenv("AGENT_LLM_LOG_DIR", "/tmp/matchpulse-demo-soccer")) / "llm_output.log"
@@ -908,8 +909,12 @@ class _Handler(BaseHTTPRequestHandler):
 
     def _send_cors(self):
         self.send_header("Access-Control-Allow-Origin", "*")
-        self.send_header("Access-Control-Allow-Methods", "POST, OPTIONS, GET")
-        self.send_header("Access-Control-Allow-Headers", "Content-Type, Accept")
+        self.send_header("Access-Control-Allow-Methods", "POST, OPTIONS, GET, HEAD")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type, Accept, Range")
+        self.send_header(
+            "Access-Control-Expose-Headers",
+            "Accept-Ranges, Content-Length, Content-Range, Content-Type",
+        )
 
     def _send_json(self, payload: dict[str, Any], status: int = 200):
         status, body = _json_bytes(payload, status)
@@ -943,25 +948,38 @@ class _Handler(BaseHTTPRequestHandler):
         self._send_cors()
         self.end_headers()
 
+    def do_HEAD(self):
+        self._handle_get(send_body=False)
+
     def do_GET(self):
+        self._handle_get(send_body=True)
+
+    def _handle_get(self, send_body=True):
         parsed = urlparse(self.path)
         path = parsed.path.rstrip("/")
         if path == "/health":
-            self._send_json(
-                {
-                    "status": "ok",
-                    "agent_loaded": _AGENT is not None,
-                    "python": sys.executable,
-                    "llm_log_enabled": ENABLE_LLM_LOG,
-                    "llm_log": str(LLM_LOG_PATH) if ENABLE_LLM_LOG else None,
-                    "route": "web -> SoccerNetVQAAgent -> vLLM",
-                }
-            )
+            payload = {
+                "status": "ok",
+                "agent_loaded": _AGENT is not None,
+                "python": sys.executable,
+                "llm_log_enabled": ENABLE_LLM_LOG,
+                "llm_log": str(LLM_LOG_PATH) if ENABLE_LLM_LOG else None,
+                "route": "web -> SoccerNetVQAAgent -> vLLM",
+            }
+            if send_body:
+                self._send_json(payload)
+            else:
+                status, body = _json_bytes(payload)
+                self.send_response(status)
+                self._send_cors()
+                self.send_header("Content-Type", "application/json; charset=utf-8")
+                self.send_header("Content-Length", str(len(body)))
+                self.end_headers()
             return
         
         # Serve video files from /videos/
         if path.startswith("/videos/"):
-            filename = path[8:]  # Remove "/videos/" prefix
+            filename = unquote(path[8:])  # Remove "/videos/" prefix
             # Security: prevent directory traversal
             if ".." in filename or filename.startswith("/"):
                 self._send_json({"error": "Invalid filename"}, status=400)
@@ -988,58 +1006,7 @@ class _Handler(BaseHTTPRequestHandler):
             content_type = content_type_map.get(ext, "application/octet-stream")
             
             try:
-                file_size = video_path.stat().st_size
-                
-                # Handle Range requests (HTTP 206 Partial Content)
-                range_header = self.headers.get("Range")
-                if range_header and range_header.startswith("bytes="):
-                    range_spec = range_header[6:]
-                    try:
-                        parts = range_spec.split(",")
-                        if len(parts) == 1:
-                            part = parts[0].strip()
-                            if "-" in part:
-                                start_str, end_str = part.split("-", 1)
-                                start = int(start_str) if start_str else 0
-                                end = int(end_str) if end_str else file_size - 1
-                                if start <= end < file_size:
-                                    content_length = end - start + 1
-                                    self.send_response(206)
-                                    self._send_cors()
-                                    self.send_header("Content-Type", content_type)
-                                    self.send_header("Content-Length", str(content_length))
-                                    self.send_header("Content-Range", f"bytes {start}-{end}/{file_size}")
-                                    self.send_header("Accept-Ranges", "bytes")
-                                    self.end_headers()
-                                    
-                                    with open(video_path, "rb") as f:
-                                        f.seek(start)
-                                        remaining = content_length
-                                        while remaining > 0:
-                                            chunk_size = min(65536, remaining)
-                                            chunk = f.read(chunk_size)
-                                            if not chunk:
-                                                break
-                                            self.wfile.write(chunk)
-                                            remaining -= len(chunk)
-                                    return
-                    except (ValueError, IndexError):
-                        pass
-                
-                # No range or invalid range: send full file
-                self.send_response(200)
-                self._send_cors()
-                self.send_header("Content-Type", content_type)
-                self.send_header("Content-Length", str(file_size))
-                self.send_header("Accept-Ranges", "bytes")
-                self.end_headers()
-                
-                with open(video_path, "rb") as f:
-                    while True:
-                        chunk = f.read(65536)  # 64KB chunks
-                        if not chunk:
-                            break
-                        self.wfile.write(chunk)
+                self._send_video_file(video_path, content_type, send_body=send_body)
                 return
             except Exception as exc:
                 _log("HTTP", f"Error serving video {filename}: {exc}")
@@ -1047,6 +1014,86 @@ class _Handler(BaseHTTPRequestHandler):
                 return
 
         self._send_json({"error": "Not found"}, status=404)
+
+    def _parse_byte_range(self, range_header: str, file_size: int) -> tuple[int, int] | None:
+        if not range_header.startswith("bytes="):
+            return None
+
+        ranges = range_header[6:].split(",")
+        if len(ranges) != 1:
+            return None
+
+        range_spec = ranges[0].strip()
+        if "-" not in range_spec:
+            return None
+
+        start_text, end_text = range_spec.split("-", 1)
+        try:
+            if start_text == "":
+                suffix_length = int(end_text)
+                if suffix_length <= 0:
+                    return None
+                start = max(file_size - suffix_length, 0)
+                end = file_size - 1
+            else:
+                start = int(start_text)
+                end = int(end_text) if end_text else file_size - 1
+        except ValueError:
+            return None
+
+        if start < 0 or start >= file_size or end < start:
+            return None
+
+        return start, min(end, file_size - 1)
+
+    def _send_range_not_satisfiable(self, file_size: int):
+        self.send_response(416)
+        self._send_cors()
+        self.send_header("Content-Range", f"bytes */{file_size}")
+        self.end_headers()
+
+    def _send_video_file(self, video_path: Path, content_type: str, send_body=True):
+        file_size = video_path.stat().st_size
+        range_header = self.headers.get("Range")
+
+        if range_header:
+            byte_range = self._parse_byte_range(range_header, file_size)
+            if byte_range is None:
+                self._send_range_not_satisfiable(file_size)
+                return
+
+            start, end = byte_range
+            content_length = end - start + 1
+            self.send_response(206)
+            self._send_cors()
+            self.send_header("Content-Type", content_type)
+            self.send_header("Content-Length", str(content_length))
+            self.send_header("Content-Range", f"bytes {start}-{end}/{file_size}")
+            self.send_header("Accept-Ranges", "bytes")
+            self.end_headers()
+            if send_body:
+                self._write_file_range(video_path, start, content_length)
+            return
+
+        self.send_response(200)
+        self._send_cors()
+        self.send_header("Content-Type", content_type)
+        self.send_header("Content-Length", str(file_size))
+        self.send_header("Accept-Ranges", "bytes")
+        self.end_headers()
+        if send_body:
+            self._write_file_range(video_path, 0, file_size)
+
+    def _write_file_range(self, video_path: Path, start: int, length: int):
+        remaining = length
+        with video_path.open("rb") as handle:
+            handle.seek(start)
+            while remaining > 0:
+                chunk = handle.read(min(VIDEO_CHUNK_SIZE, remaining))
+                if not chunk:
+                    break
+                self.wfile.write(chunk)
+                remaining -= len(chunk)
 
     def do_POST(self):
         path = self.path.rstrip("/")
