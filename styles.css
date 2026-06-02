@@ -783,7 +783,7 @@ textarea {
   background: #39423e;
   cursor: pointer;
   padding: 0;
-  transition: background 0.2s ease;
+  transition: none;
 }
 
 .marker:hover {
@@ -1895,7 +1895,7 @@ textarea {
 .marker.is-selected-range {
   background: #4ade80 !important; /* Glowing bright green range background */
   box-shadow: 0 0 6px rgba(74, 222, 128, 0.6);
-  transform: scaleY(1.3);
+  transform: none;
 }
 
 /* Highlighted selected event in the timeline events block */

@@ -2281,6 +2281,9 @@ function statRow(label, left, right, suffix) {
 function highlightMarkerBarRange(start, end) {
   document.querySelectorAll(".marker-bar .marker").forEach((marker) => {
     const min = Number(marker.dataset.minute);
+    const shouldSelect = min >= start && min <= end;
+    const isSelected = marker.classList.contains("is-selected-range");
+    if (shouldSelect === isSelected) return;
     if (min >= start && min <= end) {
       marker.classList.add("is-selected-range");
     } else {
@@ -2401,6 +2404,7 @@ function wireDetail(match) {
   const attachBtn = document.querySelector("#attachSegmentBtn");
   const markerBar = document.querySelector(".marker-bar");
   let highlightedRangeKey = "";
+  let renderedTimelineMinutes = 0;
 
   function setHighlightedRange(start, end, force = false) {
     const key = `${start}:${end}`;
@@ -2493,7 +2497,12 @@ function wireDetail(match) {
 
   function renderTimelineMarkers() {
     if (!markerBar) return;
+    if (isTimelineDragging) return;
     const totalMinutes = getVideoTimelineMinutes();
+    if (totalMinutes === renderedTimelineMinutes && markerBar.children.length === totalMinutes) {
+      return;
+    }
+    renderedTimelineMinutes = totalMinutes;
     markerBar.style.setProperty("--timeline-minutes", String(totalMinutes || 1));
     markerBar.innerHTML = Array.from({ length: totalMinutes }, (_, index) => {
       const minute = index + 1;
