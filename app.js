@@ -2445,6 +2445,44 @@ function wireDetail(match) {
     return 0;
   }
 
+  function minuteFromPointerX(clientX) {
+    if (!markerBar) return null;
+    const totalMinutes = getVideoTimelineMinutes();
+    if (!totalMinutes) return null;
+    const rect = markerBar.getBoundingClientRect();
+    if (!rect.width) return null;
+    const ratio = Math.min(Math.max((clientX - rect.left) / rect.width, 0), 1);
+    return Math.min(totalMinutes, Math.max(1, Math.floor(ratio * totalMinutes) + 1));
+  }
+
+  function updateDraggedTimelineSelection(clientX) {
+    if (!isTimelineDragging) return;
+    const minute = minuteFromPointerX(clientX);
+    if (!minute) return;
+    timelineEndMin = minute;
+    if (timelineEndMin !== timelineStartMin) {
+      dragOccurred = true;
+    }
+    const start = Math.min(timelineStartMin, timelineEndMin);
+    const end = Math.max(timelineStartMin, timelineEndMin);
+    if (start === end) {
+      highlightMarkerBarRange(start, end);
+      return;
+    }
+    showActionBar(start, end);
+  }
+
+  function startTimelineDrag(clientX) {
+    const minute = minuteFromPointerX(clientX);
+    if (!minute) return false;
+    isTimelineDragging = true;
+    dragOccurred = false;
+    timelineStartMin = minute;
+    timelineEndMin = minute;
+    highlightMarkerBarRange(minute, minute);
+    return true;
+  }
+
   function renderTimelineMarkers() {
     if (!markerBar) return;
     const totalMinutes = getVideoTimelineMinutes();
@@ -2463,27 +2501,19 @@ function wireDetail(match) {
     markerBar.querySelectorAll(".marker").forEach((marker) => {
       marker.addEventListener("mousedown", (e) => {
         if (e.button !== 0) return;
-        isTimelineDragging = true;
-        dragOccurred = false;
-        timelineStartMin = Number(marker.dataset.minute);
-        timelineEndMin = timelineStartMin;
+        startTimelineDrag(e.clientX);
         e.preventDefault();
-      });
-
-      marker.addEventListener("mouseenter", () => {
-        if (!isTimelineDragging) return;
-        dragOccurred = true;
-        timelineEndMin = Number(marker.dataset.minute);
-
-        const start = Math.min(timelineStartMin, timelineEndMin);
-        const end = Math.max(timelineStartMin, timelineEndMin);
-
-        showActionBar(start, end);
       });
     });
   }
 
   if (markerBar) {
+    markerBar.addEventListener("mousedown", (e) => {
+      if (e.button !== 0) return;
+      if (!startTimelineDrag(e.clientX)) return;
+      e.preventDefault();
+    });
+
     markerBar.addEventListener("click", (e) => {
       const marker = e.target.closest(".marker");
       if (!marker) return;
@@ -2499,29 +2529,13 @@ function wireDetail(match) {
     markerBar.addEventListener("touchstart", (e) => {
       if (e.touches.length !== 1) return;
       const touch = e.touches[0];
-      const target = document.elementFromPoint(touch.clientX, touch.clientY);
-      const marker = target ? target.closest(".marker") : null;
-      if (marker) {
-        isTimelineDragging = true;
-        dragOccurred = false;
-        timelineStartMin = Number(marker.dataset.minute);
-        timelineEndMin = timelineStartMin;
-      }
+      startTimelineDrag(touch.clientX);
     }, { passive: true });
 
     markerBar.addEventListener("touchmove", (e) => {
       if (!isTimelineDragging || e.touches.length !== 1) return;
       const touch = e.touches[0];
-      const target = document.elementFromPoint(touch.clientX, touch.clientY);
-      const marker = target ? target.closest(".marker") : null;
-      if (marker) {
-        dragOccurred = true;
-        timelineEndMin = Number(marker.dataset.minute);
-        const start = Math.min(timelineStartMin, timelineEndMin);
-        const end = Math.max(timelineStartMin, timelineEndMin);
-
-        showActionBar(start, end);
-      }
+      updateDraggedTimelineSelection(touch.clientX);
     }, { passive: true });
 
     const onTouchEnd = () => {
@@ -2531,6 +2545,8 @@ function wireDetail(match) {
       const finalEnd = Math.max(timelineStartMin, timelineEndMin);
       if (dragOccurred && finalStart !== finalEnd) {
         showActionBar(finalStart, finalEnd);
+      } else {
+        highlightMarkerBarRange(-1, -1);
       }
     };
     markerBar.addEventListener("touchend", onTouchEnd);
@@ -2545,7 +2561,14 @@ function wireDetail(match) {
 
     if (dragOccurred && finalStart !== finalEnd) {
       showActionBar(finalStart, finalEnd);
+    } else {
+      highlightMarkerBarRange(-1, -1);
     }
+  };
+
+  const onGlobalMouseMove = (event) => {
+    if (!isTimelineDragging) return;
+    updateDraggedTimelineSelection(event.clientX);
   };
 
   if (window._onGlobalMouseUpCleanup) {
@@ -2553,8 +2576,10 @@ function wireDetail(match) {
   }
   window._onGlobalMouseUpCleanup = () => {
     window.removeEventListener("mouseup", onGlobalMouseUp);
+    window.removeEventListener("mousemove", onGlobalMouseMove);
   };
   window.addEventListener("mouseup", onGlobalMouseUp);
+  window.addEventListener("mousemove", onGlobalMouseMove);
   video.addEventListener("loadedmetadata", renderTimelineMarkers);
   video.addEventListener("durationchange", renderTimelineMarkers);
   renderTimelineMarkers();

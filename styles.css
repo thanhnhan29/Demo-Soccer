@@ -772,6 +772,8 @@ textarea {
   gap: 2px;
   padding: 12px;
   background: #1a1e1c;
+  touch-action: none;
+  user-select: none;
 }
 
 .marker {
