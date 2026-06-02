@@ -2422,6 +2422,14 @@ function wireDetail(match) {
     actionBar.classList.remove("is-active");
   }
 
+  function seekToSegmentStart(minute) {
+    if (!video || !Number.isFinite(minute)) return;
+    const targetMinute = Math.max(0, minute);
+    video.currentTime = Math.min(video.duration || 5400, targetMinute * 60);
+    updateVideoContext(targetMinute);
+    updateChatContextBar(targetMinute);
+  }
+
   const markers = document.querySelectorAll(".marker-bar .marker");
 
   markers.forEach((marker) => {
@@ -2483,6 +2491,7 @@ function wireDetail(match) {
       const finalEnd = Math.max(timelineStartMin, timelineEndMin);
       if (dragOccurred && finalStart !== finalEnd) {
         showActionBar(finalStart, finalEnd);
+        seekToSegmentStart(finalStart);
       }
     };
     markerBar.addEventListener("touchend", onTouchEnd);
@@ -2497,6 +2506,7 @@ function wireDetail(match) {
 
     if (dragOccurred && finalStart !== finalEnd) {
       showActionBar(finalStart, finalEnd);
+      seekToSegmentStart(finalStart);
     }
   };
 
