@@ -2400,6 +2400,14 @@ function wireDetail(match) {
   const cancelBtn = document.querySelector("#cancelSegmentBtn");
   const attachBtn = document.querySelector("#attachSegmentBtn");
   const markerBar = document.querySelector(".marker-bar");
+  let highlightedRangeKey = "";
+
+  function setHighlightedRange(start, end, force = false) {
+    const key = `${start}:${end}`;
+    if (!force && key === highlightedRangeKey) return;
+    highlightedRangeKey = key;
+    highlightMarkerBarRange(start, end);
+  }
 
   function showActionBar(start, end) {
     if (!actionBar || !rangeText) return;
@@ -2407,7 +2415,7 @@ function wireDetail(match) {
     endMin = end;
     rangeText.textContent = `${start} - ${end}`;
     actionBar.classList.add("is-active");
-    highlightMarkerBarRange(start, end);
+    setHighlightedRange(start, end);
   }
 
   function hideActionBar() {
@@ -2429,7 +2437,7 @@ function wireDetail(match) {
   function jumpToMinute(minute) {
     if (!video || !Number.isFinite(minute)) return;
     hideActionBar();
-    highlightMarkerBarRange(-1, -1);
+    setHighlightedRange(-1, -1);
     if (activeContext && activeContext.type === "range") {
       activeContext = null;
     }
@@ -2466,7 +2474,7 @@ function wireDetail(match) {
     const start = Math.min(timelineStartMin, timelineEndMin);
     const end = Math.max(timelineStartMin, timelineEndMin);
     if (start === end) {
-      highlightMarkerBarRange(start, end);
+      setHighlightedRange(start, end);
       return;
     }
     showActionBar(start, end);
@@ -2479,7 +2487,7 @@ function wireDetail(match) {
     dragOccurred = false;
     timelineStartMin = minute;
     timelineEndMin = minute;
-    highlightMarkerBarRange(minute, minute);
+    setHighlightedRange(minute, minute);
     return true;
   }
 
@@ -2495,16 +2503,8 @@ function wireDetail(match) {
       return `<button class="${className}" data-minute="${minute}" title="${escapeAttr(t("minute"))} ${minute}"></button>`;
     }).join("");
     if (actionBar && actionBar.classList.contains("is-active")) {
-      highlightMarkerBarRange(startMin, endMin);
+      setHighlightedRange(startMin, endMin, true);
     }
-
-    markerBar.querySelectorAll(".marker").forEach((marker) => {
-      marker.addEventListener("mousedown", (e) => {
-        if (e.button !== 0) return;
-        startTimelineDrag(e.clientX);
-        e.preventDefault();
-      });
-    });
   }
 
   if (markerBar) {
@@ -2546,7 +2546,7 @@ function wireDetail(match) {
       if (dragOccurred && finalStart !== finalEnd) {
         showActionBar(finalStart, finalEnd);
       } else {
-        highlightMarkerBarRange(-1, -1);
+        setHighlightedRange(-1, -1);
       }
     };
     markerBar.addEventListener("touchend", onTouchEnd);
@@ -2562,7 +2562,7 @@ function wireDetail(match) {
     if (dragOccurred && finalStart !== finalEnd) {
       showActionBar(finalStart, finalEnd);
     } else {
-      highlightMarkerBarRange(-1, -1);
+      setHighlightedRange(-1, -1);
     }
   };
 
@@ -2716,7 +2716,7 @@ function wireDetail(match) {
   if (cancelBtn) {
     cancelBtn.addEventListener("click", () => {
       hideActionBar();
-      highlightMarkerBarRange(-1, -1);
+      setHighlightedRange(-1, -1);
       if (activeContext && activeContext.type === "range") {
         activeContext = null;
         const currentMin = Math.floor(video.currentTime / 60);
