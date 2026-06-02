@@ -88,26 +88,26 @@ Trong phiên bản v1.1, schema dữ liệu trong bộ nhớ và lưu trữ loca
 - Nên chạy bằng một static server để frontend fetch được dataset (trình duyệt có thể chặn fetch khi mở file:// trực tiếp).
 - Nếu vẫn muốn mở trực tiếp `index.html`, bạn sẽ thấy dữ liệu seed fallback thay vì dataset.
 
-## Agent bridge (chat -> model)
+## Agent bridge (chat -> SoccerNetVQAAgent -> vLLM)
 
-Frontend chat trong [app.js](app.js) se goi API `/api/agent`. De ket noi voi model trong pipeline/agent:
+Frontend chat trong [app.js](app.js) se goi API `/api/agent`. API nay load `SoccerNetVQAAgent`, tao `ReasoningContext` tu packet cua web, roi goi `agent._reason(ctx, depth=0)` de chay THINK -> DECOMPOSE -> EXECUTE -> SYNTHESIZE truoc khi return ve UI.
 
 1) Chay vLLM server (giong pipeline/agent/run.py):
 
 ```bash
-python -m vllm.entrypoints.openai.api_server \
-   --model /raid/hvtham/SoccerNet/Qwen3-VL-8B-Instruct \
-   --port 22002 \
-   --trust-remote-code
+bash /raid/hvtham/SoccerNet/run_Qwen.sh
 ```
 
-2) Chay bridge server (trong folder Demo-Soccer):
+2) Chay AgentSoccer API bằng conda env `soccer`:
 
 ```bash
+conda activate soccer
 AGENT_SERVER=http://127.0.0.1:22002/v1 \
-AGENT_MODEL=/raid/hvtham/SoccerNet/Qwen3-VL-8B-Instruct \
+AGENT_MODEL=/raid/hvtham/SoccerNet/Qwen3.5-9B \
 python /raid/hvtham/SoccerNet/Demo-Soccer/agent_server.py
 ```
+
+Mac dinh API listen o `http://0.0.0.0:8008`, endpoint chat la `/api/agent`, endpoint trang thai reasoning la `/api/agent/status?request_id=...`, health check la `/health`.
 
 3) Dat endpoint cho frontend (chon 1):
 
@@ -120,5 +120,6 @@ Hoac khai bao truoc khi load app.js:
 ```html
 <script>
    window.AGENT_API_URL = "http://localhost:8008/api/agent";
+   window.AGENT_TIMEOUT_MS = 180000;
 </script>
 ```

@@ -1,4 +1,6 @@
 __pycache__/
 *.py[cod]
-.mkv
-.mp4
+*.mkv
+*.mp4tmp.zip
+*.mp4
+*.zip

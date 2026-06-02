@@ -127,11 +127,41 @@ const seedMatches = [
 
 const HOME_INITIAL_COUNT = 7;
 const HOME_STEP = 6;
+const DEFAULT_AGENT_API_URL = (() => {
+  const rawHost = window.location.hostname || "localhost";
+  const host = rawHost === "0.0.0.0" ? "127.0.0.1" : rawHost;
+  return `http://${host}:8008/api/agent`;
+})();
+function getConfiguredAgentApiUrl() {
+  if (window.AGENT_API_URL) return window.AGENT_API_URL;
+  const stored = localStorage.getItem("agentApiUrl");
+  const pageHost = window.location.hostname;
+  if (
+    stored &&
+    pageHost &&
+    !["localhost", "127.0.0.1"].includes(pageHost) &&
+    /\/\/(localhost|127\.0\.0\.1):8008\/api\/agent\/?$/.test(stored)
+  ) {
+    const migrated = `http://${pageHost}:8008/api/agent`;
+    localStorage.setItem("agentApiUrl", migrated);
+    return migrated;
+  }
+  return stored || DEFAULT_AGENT_API_URL;
+}
 const AGENT_API_URL =
-  window.AGENT_API_URL ||
-  localStorage.getItem("agentApiUrl") ||
-  "http://localhost:8008/api/agent";
-const AGENT_TIMEOUT_MS = 20000;
+  getConfiguredAgentApiUrl();
+const AGENT_TIMEOUT_MS = Number(
+  window.AGENT_TIMEOUT_MS ||
+  localStorage.getItem("agentTimeoutMs") ||
+  180000
+);
+const APP_BUILD = "agent-chat-stable-20260525-2";
+const chatMemory = new Map();
+const agentInFlightByMatch = new Set();
+
+window.__MATCHPULSE_BUILD = APP_BUILD;
+window.__MATCHPULSE_AGENT_API_URL = AGENT_API_URL;
+console.info("[MatchPulse] build", APP_BUILD, "agent", AGENT_API_URL);
 
 const LEAGUE_THEMES = {
   "Premier League": {
@@ -281,6 +311,9 @@ const COPY = {
     notFound: "Chưa có dữ liệu.",
     chatAgentIntro:
       "Mình đang giữ thông tin trận đấu, dòng thời gian và ngữ cảnh video hiện tại. Bạn có thể hỏi về chiến thuật, cầu thủ hoặc yêu cầu nhảy tới pha bóng đang xem.",
+    agentThinkingInitial: "Agent đã nhận câu hỏi. Đang chuẩn bị suy luận...",
+    agentThinkingBusy: "Agent đang xử lý câu trước, đợi mình một chút.",
+    agentThinkingDone: "Đã có câu trả lời.",
     mockAgent:
       "Mock agent: mình sẽ trả lời dựa trên {teams}, tỷ số {score}, video phút {minute}. {event}",
     mockAgentEvent: "Mốc gần nhất: {events}",
@@ -411,6 +444,9 @@ const COPY = {
     notFound: "Not found.",
     chatAgentIntro:
       "I am holding the match packet, timeline, and current video context. Ask about tactics, players, or jump to highlights.",
+    agentThinkingInitial: "Agent received the question. Preparing reasoning...",
+    agentThinkingBusy: "Agent is still working on the previous question.",
+    agentThinkingDone: "Answer ready.",
     mockAgent:
       "Mock agent: I will answer using {teams}, score {score}, minute {minute}. {event}",
     mockAgentEvent: "Nearest: {events}",
@@ -679,7 +715,11 @@ function getInitialLanguage() {
 
 function t(key, params = {}) {
   const dictionary = COPY[currentLanguage] || COPY.en;
-  let value = dictionary[key] ?? COPY.en[key] ?? key;
+  let value = Object.prototype.hasOwnProperty.call(dictionary, key)
+    ? dictionary[key]
+    : Object.prototype.hasOwnProperty.call(COPY.en, key)
+      ? COPY.en[key]
+      : key;
   Object.entries(params).forEach(([paramKey, paramValue]) => {
     value = value.replaceAll(`{${paramKey}}`, String(paramValue));
   });
@@ -768,7 +808,10 @@ function normalizeMatch(match) {
   }
 
   // --- relatedCount: backward compat with old 'related' field ---
-  const relatedCount = Number(match.relatedCount ?? match.related ?? 0);
+  const relatedCountValue = match.relatedCount !== null && match.relatedCount !== undefined
+    ? match.relatedCount
+    : match.related;
+  const relatedCount = Number(relatedCountValue !== null && relatedCountValue !== undefined ? relatedCountValue : 0);
 
   return {
     articleIntro:
@@ -779,8 +822,7 @@ function normalizeMatch(match) {
     // Normalized / canonical fields (override spread above)
     relatedCount,
     readTimeMinutes,
-    source: match.source ?? null,
-    videoUrl: getMatchVideoUrl(match),
+    source: match.source !== undefined && match.source !== null ? match.source : null,
     stats: match.stats || { possession: [50, 50], shots: [0, 0], xg: [0, 0] },
     chapters: Array.isArray(match.chapters) ? match.chapters : [],
     events
@@ -1194,7 +1236,7 @@ function updateTeamStats(team, goalsFor, goalsAgainst) {
 function sortByDisplayTimeDesc(a, b) {
   const dateA = parseDisplayTime(a.time);
   const dateB = parseDisplayTime(b.time);
-  return (dateB?.getTime() || 0) - (dateA?.getTime() || 0);
+  return (dateB ? dateB.getTime() : 0) - (dateA ? dateA.getTime() : 0);
 }
 
 function parseDisplayTime(value) {
@@ -1235,9 +1277,9 @@ function parseIsoTime(value) {
 }
 
 function shouldLoadEvents(match) {
-  if (!match?.source) return false;
+  if (!match || !match.source) return false;
   if (!Array.isArray(match.events) || match.events.length === 0) return true;
-  if (match.events.length === 1 && isMissingText(match.events[0]?.text)) return true;
+  if (match.events.length === 1 && isMissingText(match.events[0] ? match.events[0].text : undefined)) return true;
   return false;
 }
 
@@ -1277,16 +1319,16 @@ async function hydrateMatchEvents(match) {
 }
 
 function extractEventsFromRaw(raw) {
-  const comments = Array.isArray(raw?.comments) ? raw.comments : [];
+  const comments = raw && Array.isArray(raw.comments) ? raw.comments : [];
   /** @type {Array<{minuteVal: number, minute: string, text: string}>} */
   const events = [];
 
   comments.forEach((comment) => {
-    const type = String(comment?.comments_type || "").trim().toLowerCase();
+    const type = String(comment && comment.comments_type || "").trim().toLowerCase();
     if (!EVENT_TYPES.has(type)) return;
-    const minuteVal = parseEventMinute(comment?.time_stamp, comment?.half);
+    const minuteVal = parseEventMinute(comment && comment.time_stamp, comment && comment.half);
     if (minuteVal === null) return;
-    const text = String(comment?.comments_text || "").trim();
+    const text = String(comment && comment.comments_text || "").trim();
     if (!text) return;
     events.push({ minuteVal, text });
   });
@@ -1401,13 +1443,19 @@ function getCurrentMatchId() {
 }
 
 function renderDetail(matchId) {
-  activeContext = null;
-  updateRoleBadge();
   const match = getTranslatedMatch(matches.find((item) => item.id === matchId) || matches[0]);
   if (!match) {
     renderHome();
     return;
   }
+  if (agentInFlightByMatch.has(match.id) && app.querySelector(".detail-page") && getCurrentMatchId() === match.id) {
+    console.info("[MatchPulse] skipped detail re-render while agent is answering", match.id);
+    updateRoleBadge();
+    return;
+  }
+
+  activeContext = null;
+  updateRoleBadge();
   const shouldLoad = shouldLoadEvents(match);
   const visibleCount = getTimelineCount(match);
   const videoUrl = getMatchVideoUrl(match);
@@ -1428,8 +1476,8 @@ function renderDetail(matchId) {
       </header>
       <section class="media-stage">
         <div class="video-wrap">
-          <video id="matchVideo" controls preload="metadata" poster="${match.image}">
-            <source src="${escapeAttr(videoUrl)}" type="${escapeAttr(videoType)}" />
+          <video id="matchVideo" controls preload="none" poster="${match.image}">
+            <source src="http://localhost:8008/videos/fc-barcelona-royal-antwerp_1.mp4" type="video/mp4" />
           </video>
         </div>
         <div class="marker-bar" aria-label="Timeline video">
@@ -1516,20 +1564,20 @@ function renderDetail(matchId) {
           </div>
         </div>
         <div class="chat-log" id="chatLog">
-          <div class="message agent">${escapeHtml(t("chatAgentIntro"))}</div>
+          ${renderChatLogHtml(match.id)}
         </div>
         <div class="quick-prompts" id="quickPrompts">
           <button type="button">${escapeHtml(t("detailPromptSummary"))}</button>
           <button type="button">${escapeHtml(t("detailPromptGoal"))}</button>
           <button type="button">${escapeHtml(t("detailPromptHighlight"))}</button>
         </div>
-        <form class="chat-form" id="chatForm">
+        <div class="chat-form" id="chatForm">
           <div class="chat-context-bar" id="chatContextBar"></div>
           <div class="chat-composer">
             <textarea id="chatInput" rows="1" placeholder="${escapeAttr(t("detailAskAgent"))}..."></textarea>
-            <button class="send-button" type="submit">${escapeHtml(t("detailSend"))}</button>
+            <button class="send-button" type="button">${escapeHtml(t("detailSend"))}</button>
           </div>
-        </form>
+        </div>
       </section>
     </aside>`;
 
@@ -2016,11 +2064,15 @@ function wireInlineEditor(match) {
   });
 
   document.querySelector("#saveInlineBtn").addEventListener("click", () => {
-    const getText = (selector) => document.querySelector(selector)?.textContent.trim() || "";
+    const getText = (selector) => {
+      const node = document.querySelector(selector);
+      return node ? node.textContent.trim() : "";
+    };
     const eventMinutes = [...document.querySelectorAll("[data-event-minute]")];
     const events = eventMinutes.map((minuteNode, index) => {
       const minuteStr = minuteNode.textContent.trim();
-      const text = document.querySelector(`[data-event-text="${index}"]`)?.textContent.trim() || "";
+      const textNode = document.querySelector(`[data-event-text="${index}"]`);
+      const text = textNode ? textNode.textContent.trim() : "";
       return {
         minute: minuteStr,
         minuteVal: parseMinuteVal(minuteStr),
@@ -2088,7 +2140,7 @@ function slugify(value) {
 }
 
 function escapeHtml(value) {
-  return String(value ?? "")
+  return String(value !== null && value !== undefined ? value : "")
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;");
@@ -2096,6 +2148,123 @@ function escapeHtml(value) {
 
 function escapeAttr(value) {
   return escapeHtml(value).replaceAll('"', "&quot;");
+}
+
+function renderInlineMarkdown(text) {
+  const codeSpans = [];
+  let html = escapeHtml(text);
+  html = html.replace(/`([^`]+)`/g, (_, code) => {
+    const marker = `@@CODE${codeSpans.length}@@`;
+    codeSpans.push(`<code>${code}</code>`);
+    return marker;
+  });
+  html = html.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, (_, label, url) => {
+    return `<a href="${escapeAttr(url)}" target="_blank" rel="noopener noreferrer">${label}</a>`;
+  });
+  html = html.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+  html = html.replace(/__([^_]+)__/g, "<strong>$1</strong>");
+  html = html.replace(/(^|[\s(])\*([^*\n]+)\*/g, "$1<em>$2</em>");
+  html = html.replace(/(^|[\s(])_([^_\n]+)_/g, "$1<em>$2</em>");
+  codeSpans.forEach((code, index) => {
+    html = html.replace(`@@CODE${index}@@`, code);
+  });
+  return html;
+}
+
+function renderSafeMarkdown(markdown) {
+  const lines = String(markdown || "").replace(/\r\n/g, "\n").split("\n");
+  const html = [];
+  let paragraph = [];
+  let listType = null;
+  let inCodeBlock = false;
+  let codeLines = [];
+
+  const closeParagraph = () => {
+    if (!paragraph.length) return;
+    html.push(`<p>${renderInlineMarkdown(paragraph.join(" "))}</p>`);
+    paragraph = [];
+  };
+  const closeList = () => {
+    if (!listType) return;
+    html.push(`</${listType}>`);
+    listType = null;
+  };
+  const openList = (type) => {
+    closeParagraph();
+    if (listType === type) return;
+    closeList();
+    listType = type;
+    html.push(`<${type}>`);
+  };
+  const closeCodeBlock = () => {
+    html.push(`<pre><code>${escapeHtml(codeLines.join("\n"))}</code></pre>`);
+    codeLines = [];
+    inCodeBlock = false;
+  };
+
+  lines.forEach((line) => {
+    if (/^```/.test(line.trim())) {
+      if (inCodeBlock) {
+        closeCodeBlock();
+      } else {
+        closeParagraph();
+        closeList();
+        inCodeBlock = true;
+        codeLines = [];
+      }
+      return;
+    }
+
+    if (inCodeBlock) {
+      codeLines.push(line);
+      return;
+    }
+
+    if (!line.trim()) {
+      closeParagraph();
+      closeList();
+      return;
+    }
+
+    const heading = line.match(/^(#{1,4})\s+(.+)$/);
+    if (heading) {
+      closeParagraph();
+      closeList();
+      const level = Math.min(4, Math.max(3, heading[1].length + 2));
+      html.push(`<h${level}>${renderInlineMarkdown(heading[2])}</h${level}>`);
+      return;
+    }
+
+    const unordered = line.match(/^\s*[-*]\s+(.+)$/);
+    if (unordered) {
+      openList("ul");
+      html.push(`<li>${renderInlineMarkdown(unordered[1])}</li>`);
+      return;
+    }
+
+    const ordered = line.match(/^\s*\d+\.\s+(.+)$/);
+    if (ordered) {
+      openList("ol");
+      html.push(`<li>${renderInlineMarkdown(ordered[1])}</li>`);
+      return;
+    }
+
+    const quote = line.match(/^\s*>\s?(.+)$/);
+    if (quote) {
+      closeParagraph();
+      closeList();
+      html.push(`<blockquote>${renderInlineMarkdown(quote[1])}</blockquote>`);
+      return;
+    }
+
+    closeList();
+    paragraph.push(line.trim());
+  });
+
+  if (inCodeBlock) closeCodeBlock();
+  closeParagraph();
+  closeList();
+  return html.join("");
 }
 
 function statRow(label, left, right, suffix) {
@@ -2364,29 +2533,80 @@ function wireDetail(match) {
     updateChatContextBar(currentMin);
   });
 
-  chatForm.addEventListener("submit", async (event) => {
-    event.preventDefault();
+  let agentInFlight = false;
+  const sendButton = chatForm.querySelector(".send-button");
+  const quickPromptButtons = Array.from(quickPrompts.querySelectorAll("button"));
+  const setChatPending = (isPending) => {
+    agentInFlight = isPending;
+    if (isPending) {
+      agentInFlightByMatch.add(match.id);
+    } else {
+      agentInFlightByMatch.delete(match.id);
+    }
+    chatForm.classList.toggle("is-busy", isPending);
+    chatInput.disabled = isPending;
+    if (sendButton) sendButton.disabled = isPending;
+    quickPromptButtons.forEach((button) => {
+      button.disabled = isPending;
+    });
+  };
+
+  const submitChat = async () => {
+    if (agentInFlight) {
+      appendMessage(chatLog, t("agentThinkingBusy"), "agent");
+      return;
+    }
     const text = chatInput.value.trim();
     if (!text) return;
+
     appendMessage(chatLog, text, "user");
+    rememberChatMessage(match.id, "user", text);
     chatInput.value = "";
     resizeComposer();
+
     const packet = buildAgentContext(match, Math.floor(video.currentTime / 60), text);
-    const answer = await askAgent(packet);
-    appendMessage(chatLog, answer, "agent");
-  });
+    const requestId = createAgentRequestId();
+    const answerNode = appendMessage(chatLog, t("agentThinkingInitial"), "agent thinking");
+
+    setChatPending(true);
+    try {
+      const answer = await askAgent(packet, requestId);
+      answerNode.className = "message agent";
+      setAgentMessageHtml(answerNode, answer);
+      rememberChatMessage(match.id, "agent", answer);
+      chatLog.scrollTop = chatLog.scrollHeight;
+    } catch (error) {
+      console.warn("Agent API error.", error);
+      answerNode.className = "message agent";
+      const errorText = `Không gọi được Agent API.\n\nEndpoint đang dùng: \`${AGENT_API_URL}\`\n\nLỗi: \`${formatAgentError(error)}\``;
+      setAgentMessageHtml(answerNode, errorText);
+      rememberChatMessage(match.id, "agent", errorText);
+      chatLog.scrollTop = chatLog.scrollHeight;
+    } finally {
+      setChatPending(false);
+      chatInput.focus();
+    }
+  };
+
+  if (sendButton) {
+    sendButton.addEventListener("click", (event) => {
+      event.preventDefault();
+      submitChat();
+    });
+  }
 
   chatInput.addEventListener("input", resizeComposer);
   chatInput.addEventListener("keydown", (event) => {
     if (event.key === "Enter" && !event.shiftKey) {
       event.preventDefault();
-      chatForm.requestSubmit();
+      event.stopPropagation();
+      submitChat();
     }
   });
 
   quickPrompts.addEventListener("click", (event) => {
     const button = event.target.closest("button");
-    if (!button) return;
+    if (!button || agentInFlight) return;
     chatInput.value = button.textContent;
     resizeComposer();
     chatInput.focus();
@@ -2470,6 +2690,7 @@ function wireDetail(match) {
   }
 
   resizeComposer();
+  chatLog.scrollTop = chatLog.scrollHeight;
 }
 
 function appendMessage(chatLog, text, role) {
@@ -2478,6 +2699,48 @@ function appendMessage(chatLog, text, role) {
   node.textContent = text;
   chatLog.appendChild(node);
   chatLog.scrollTop = chatLog.scrollHeight;
+  return node;
+}
+
+function setAgentMessageHtml(node, text) {
+  node.innerHTML = `<div class="message-markdown">${renderSafeMarkdown(text)}</div>`;
+}
+
+function rememberChatMessage(matchId, role, text) {
+  const safeText = String(text || "").trim();
+  if (!matchId || !safeText) return;
+  const current = chatMemory.get(matchId) || [];
+  const next = current.concat({ role, text: safeText }).slice(-40);
+  chatMemory.set(matchId, next);
+}
+
+function renderChatLogHtml(matchId) {
+  const messages = chatMemory.get(matchId) || [];
+  if (!messages.length) {
+    return `<div class="message agent">${escapeHtml(t("chatAgentIntro"))}</div>`;
+  }
+
+  return messages
+    .map((message) => {
+      if (message.role === "user") {
+        return `<div class="message user">${escapeHtml(message.text)}</div>`;
+      }
+      return `<div class="message agent"><div class="message-markdown">${renderSafeMarkdown(message.text)}</div></div>`;
+    })
+    .join("");
+}
+
+function createAgentRequestId() {
+  if (window.crypto && typeof window.crypto.randomUUID === "function") {
+    return window.crypto.randomUUID();
+  }
+  return `agent-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+}
+
+function formatAgentError(error) {
+  if (!error) return "unknown error";
+  if (error.name === "AbortError") return "request timed out";
+  return error.message || String(error);
 }
 
 function buildAgentContext(match, currentMinute, userMessage) {
@@ -2536,9 +2799,15 @@ function buildAgentContext(match, currentMinute, userMessage) {
     match: {
       id: match.id,
       title: match.title,
+      league: match.league,
+      season: match.season,
+      status: match.status,
+      time: match.time,
       teams: [match.home, match.away],
       score: match.score,
-      stats: match.stats
+      stats: match.stats,
+      summary: match.summary,
+      source: match.source
     },
     media: {
       currentMinute: queryMinute,
@@ -2598,12 +2867,13 @@ function mockAgentAnswer(packet) {
   return `${contextIntro}${eventText}\n\n[Agent]: Based on the match data for ${packet.match.teams.join(" vs ")} (${packet.match.score}), this segment represents a key tactical phase. Let me know if you want a detailed breakdown of these actions!`;
 }
 
-async function askAgent(packet) {
+async function askAgent(packet, requestId = createAgentRequestId()) {
   if (!AGENT_API_URL) {
     return mockAgentAnswer(packet);
   }
 
   const payload = {
+    requestId,
     message: packet.userMessage,
     packet,
     lang: currentLanguage
@@ -2623,6 +2893,16 @@ async function askAgent(packet) {
     });
 
     if (!response.ok) {
+      let errorMessage = "";
+      try {
+        const errorData = await response.json();
+        errorMessage = typeof errorData.error === "string" ? errorData.error : "";
+      } catch (_) {
+        errorMessage = "";
+      }
+      if (response.status === 409 && errorMessage) {
+        return errorMessage;
+      }
       throw new Error(`Agent API failed (${response.status})`);
     }
 
@@ -2636,8 +2916,8 @@ async function askAgent(packet) {
 
     throw new Error("Empty agent response");
   } catch (error) {
-    console.warn("Agent API error, using fallback.", error);
-    return mockAgentAnswer(packet);
+    console.warn("Agent API error.", error);
+    throw error;
   } finally {
     window.clearTimeout(timeoutId);
   }
