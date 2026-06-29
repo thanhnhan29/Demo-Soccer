@@ -1,6 +1,19 @@
 __pycache__/
 *.py[cod]
+
+# Local video assets
 *.mkv
-*.mp4tmp.zip
 *.mp4
+
+# Archives, including resumed downloads such as .zip.1
 *.zip
+*.zip.*
+*.tar
+*.tar.*
+*.tgz
+*.7z
+*.rar
+
+# Generated/local runtime files
+logs/
+videos.txt

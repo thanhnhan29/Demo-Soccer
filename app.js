@@ -154,9 +154,9 @@ const AGENT_API_URL =
 const AGENT_TIMEOUT_MS = Number(
   window.AGENT_TIMEOUT_MS ||
   localStorage.getItem("agentTimeoutMs") ||
-  180000
+  600000
 );
-const APP_BUILD = "agent-chat-stable-20260525-2";
+const APP_BUILD = "agent-timeout-10m-20260606-1";
 const chatMemory = new Map();
 const agentInFlightByMatch = new Set();
 
@@ -236,17 +236,8 @@ const COPY = {
     homeEmptyDesc: "Đăng nhập Admin để thêm bài viết đầu tiên.",
     homeEmptyAction: "Mở Admin",
     homeOpenMatchRoom: "Mở phòng trận đấu",
-    homeAgentContext: "Agent-ready context",
     homeHotReads: "Bài viết nổi bật",
-    homeAgentBrief: "Tóm tắt Agent",
     homeMore: "Xem thêm ({count})",
-    agentBriefIntro: "Agent nên nhận context theo từng lớp thay vì toàn bộ bài viết.",
-    agentBriefMatchLabel: "Gói trận đấu",
-    agentBriefMatch: "metadata, score, lineups, stats, event timeline.",
-    agentBriefMediaLabel: "Gói media",
-    agentBriefMedia: "current timestamp, selected chapter, transcript window ±90s.",
-    agentBriefMemoryLabel: "Gói memory",
-    agentBriefMemory: "user intent summary, preferences, unresolved questions.",
     relatedLabel: "liên quan",
     leaguesKicker: "Giải đấu",
     leaguesTitle: "Bảng xếp hạng demo theo mẫu giải đấu",
@@ -256,7 +247,6 @@ const COPY = {
     leagueBoardPill: "Bảng pastel",
     leagueLatestStories: "Bài mới nhất",
     leagueNote: "Bảng xếp hạng demo dựa trên một phần dữ liệu, sẽ được cập nhật khi LLM hoàn thiện nội dung.",
-    leagueNotFound: "Chưa có dữ liệu.",
     standingsRank: "#",
     standingsClub: "CLB",
     standingsPlayed: "Trận",
@@ -309,9 +299,6 @@ const COPY = {
     adminDashboard: "Bảng điều khiển",
     adminCoverLabel: "Đường dẫn ảnh bìa",
     adminVideoLabel: "Đường dẫn video",
-    notFound: "Chưa có dữ liệu.",
-    chatAgentIntro:
-      "Mình đang giữ thông tin trận đấu, dòng thời gian và ngữ cảnh video hiện tại. Bạn có thể hỏi về chiến thuật, cầu thủ hoặc yêu cầu nhảy tới pha bóng đang xem.",
     agentThinkingInitial: "Agent đã nhận câu hỏi. Đang chuẩn bị suy luận...",
     agentThinkingBusy: "Agent đang xử lý câu trước, đợi mình một chút.",
     agentThinkingDone: "Đã có câu trả lời.",
@@ -369,17 +356,8 @@ const COPY = {
     homeEmptyDesc: "Login as admin to add the first story.",
     homeEmptyAction: "Open admin",
     homeOpenMatchRoom: "Open match room",
-    homeAgentContext: "Agent-ready context",
     homeHotReads: "Hot reads",
-    homeAgentBrief: "Agent brief",
     homeMore: "More stories ({count})",
-    agentBriefIntro: "Agents should fetch layered context instead of the full article.",
-    agentBriefMatchLabel: "Match packet",
-    agentBriefMatch: "metadata, score, lineups, stats, event timeline.",
-    agentBriefMediaLabel: "Media packet",
-    agentBriefMedia: "current timestamp, selected chapter, transcript window ±90s.",
-    agentBriefMemoryLabel: "Memory packet",
-    agentBriefMemory: "user intent summary, preferences, unresolved questions.",
     relatedLabel: "related",
     leaguesKicker: "Leagues",
     leaguesTitle: "Pastel league boards",
@@ -389,7 +367,6 @@ const COPY = {
     leagueBoardPill: "Pastel board",
     leagueLatestStories: "Latest stories",
     leagueNote: "Demo standings based on partial data, will update when LLM finishes the content.",
-    leagueNotFound: "Not found.",
     standingsRank: "#",
     standingsClub: "Club",
     standingsPlayed: "P",
@@ -442,9 +419,6 @@ const COPY = {
     adminDashboard: "Dashboard",
     adminCoverLabel: "Cover image URL",
     adminVideoLabel: "Video URL",
-    notFound: "Not found.",
-    chatAgentIntro:
-      "I am holding the match packet, timeline, and current video context. Ask about tactics, players, or jump to highlights.",
     agentThinkingInitial: "Agent received the question. Preparing reasoning...",
     agentThinkingBusy: "Agent is still working on the previous question.",
     agentThinkingDone: "Answer ready.",
@@ -681,19 +655,24 @@ const brandTagline = document.querySelector("#brandTagline");
 const refreshBtn = document.querySelector("#refreshBtn");
 
 async function loadMatches() {
+  const dataset = await fetchDataset();
   const hasUserEdits = localStorage.getItem(USER_EDITS_KEY) === "1";
+  if (dataset.length) {
+    const normalized = dataset.map(normalizeMatch);
+    if (hasUserEdits) {
+      const merged = mergeDatasetMatches(normalized, readStoredMatches());
+      cacheMatches(merged, true);
+      return merged;
+    }
+    cacheMatches(normalized, false);
+    return normalized;
+  }
+
   if (hasUserEdits) {
     const cached = readStoredMatches();
     if (cached.length) {
       return cached;
     }
-  }
-
-  const dataset = await fetchDataset();
-  if (dataset.length) {
-    const normalized = dataset.map(normalizeMatch);
-    cacheMatches(normalized, false);
-    return normalized;
   }
 
   const cached = readStoredMatches();
@@ -702,6 +681,39 @@ async function loadMatches() {
   }
 
   return seedMatches.map(normalizeMatch);
+}
+
+function mergeDatasetMatches(datasetMatches, storedMatches) {
+  const storedById = new Map(storedMatches.map((match) => [match.id, match]));
+  const seen = new Set();
+  const merged = datasetMatches.map((datasetMatch) => {
+    seen.add(datasetMatch.id);
+    const stored = storedById.get(datasetMatch.id);
+    if (!stored) {
+      return datasetMatch;
+    }
+    const next = normalizeMatch({ ...stored, ...datasetMatch });
+    ["title", "summary", "articleIntro", "articleNote", "image"].forEach((key) => {
+      if (isMissingText(datasetMatch[key]) && !isMissingText(stored[key])) {
+        next[key] = stored[key];
+      }
+    });
+    ["chapters", "events"].forEach((key) => {
+      if ((!Array.isArray(datasetMatch[key]) || !datasetMatch[key].length) &&
+          Array.isArray(stored[key]) && stored[key].length) {
+        next[key] = stored[key];
+      }
+    });
+    return next;
+  });
+
+  storedMatches.forEach((match) => {
+    if (!seen.has(match.id)) {
+      merged.push(match);
+    }
+  });
+
+  return merged.map(normalizeMatch);
 }
 
 function getInitialLanguage() {
@@ -845,7 +857,7 @@ function isMissingText(value) {
 }
 
 function displayText(value) {
-  return isMissingText(value) ? t("notFound") : String(value);
+  return isMissingText(value) ? "" : String(value);
 }
 
 function getMatchVideoUrl(match) {
@@ -968,13 +980,15 @@ function renderTeamAbbr(name) {
 
 function renderMatchCard(match, index) {
   const style = buildLeagueStyle(match.league, index * 0.06);
+  const summary = displayText(match.summary);
+  const status = isMissingText(match.status) ? "" : displayStatus(match.status);
   return `
     <a class="match-card" href="#/match/${match.id}" style="${style}">
       <img src="${escapeAttr(match.image)}" alt="${escapeAttr(match.home)} vs ${escapeAttr(match.away)}" />
       <div class="match-card-body">
-        <span class="tag">${escapeHtml(displayStatus(match.status))}</span>
+        ${status ? `<span class="tag">${escapeHtml(status)}</span>` : ""}
         <h2>${escapeHtml(match.title)}</h2>
-        <p>${escapeHtml(displayText(match.summary))}</p>
+        ${summary ? `<p>${escapeHtml(summary)}</p>` : ""}
         <div class="meta-row">
           <span>${escapeHtml(match.readTime)}</span>
           <span>${match.relatedCount} ${escapeHtml(t("relatedLabel"))}</span>
@@ -1014,6 +1028,12 @@ function renderHome() {
   }
 
   const heroNode = view.querySelector(".hero-match");
+  const heroKicker = [featured.league, isMissingText(featured.time) ? "" : featured.time]
+    .filter(Boolean)
+    .join(" · ");
+  const heroSummary = isMissingText(featured.summary)
+    ? ""
+    : `<p class="dek">${escapeHtml(featured.summary)}</p>`;
   heroNode.style.cssText = buildLeagueStyle(featured.league);
   heroNode.innerHTML = `
     <a class="hero-media" href="#/match/${featured.id}" style="background-image: url('${escapeAttr(featured.image)}')">
@@ -1021,14 +1041,9 @@ function renderHome() {
     </a>
     <div class="hero-copy">
       <div>
-        <p class="kicker">${escapeHtml(featured.league)} · ${escapeHtml(displayText(featured.time))}</p>
+        ${heroKicker ? `<p class="kicker">${escapeHtml(heroKicker)}</p>` : ""}
         <h1>${escapeHtml(featured.title)}</h1>
-        <p class="dek">${escapeHtml(displayText(featured.summary))}</p>
-        <div class="meta-row">
-          <span>${escapeHtml(featured.readTime)}</span>
-          <span>${featured.related} ${escapeHtml(t("relatedLabel"))}</span>
-          <span>${escapeHtml(t("homeAgentContext"))}</span>
-        </div>
+        ${heroSummary}
       </div>
       <a class="pill-button" href="#/match/${featured.id}">${escapeHtml(t("homeOpenMatchRoom"))}</a>
     </div>`;
@@ -1041,12 +1056,6 @@ function renderHome() {
   view.querySelector(".hot-list").innerHTML = hotMatches
     .map((match, index) => renderHotItem(match, index))
     .join("");
-
-  view.querySelector(".agent-brief").innerHTML = `
-    <p>${escapeHtml(t("agentBriefIntro"))}</p>
-    <div class="brief-chip"><b>${escapeHtml(t("agentBriefMatchLabel"))}:</b> ${escapeHtml(t("agentBriefMatch"))}</div>
-    <div class="brief-chip"><b>${escapeHtml(t("agentBriefMediaLabel"))}:</b> ${escapeHtml(t("agentBriefMedia"))}</div>
-    <div class="brief-chip"><b>${escapeHtml(t("agentBriefMemoryLabel"))}:</b> ${escapeHtml(t("agentBriefMemory"))}</div>`;
 
   app.replaceChildren(view);
 
@@ -1071,10 +1080,6 @@ function renderHome() {
   const hotTitle = app.querySelector(".rail-panel h2");
   if (hotTitle) {
     hotTitle.textContent = t("homeHotReads");
-  }
-  const agentTitle = app.querySelectorAll(".rail-panel h2")[1];
-  if (agentTitle) {
-    agentTitle.textContent = t("homeAgentBrief");
   }
 }
 
@@ -1115,16 +1120,21 @@ function renderLeagueCard(league, leagueMatches) {
           </tr>`
         )
         .join("")
-    : `<tr><td colspan="5">${escapeHtml(t("leagueNotFound"))}</td></tr>`;
+    : `<tr><td colspan="5"></td></tr>`;
 
   const latest = [...leagueMatches].sort(sortByDisplayTimeDesc).slice(0, 3);
   const stories = latest
     .map(
-      (match) => `
+      (match) => {
+        const storyMeta = [displayText(match.time), isMissingText(match.status) ? "" : displayStatus(match.status)]
+          .filter(Boolean)
+          .join(" · ");
+        return `
         <a class="story-link" href="#/match/${match.id}">
           <strong>${escapeHtml(match.title)}</strong>
-          <span>${escapeHtml(displayText(match.time))}${match.status ? ` · ${escapeHtml(displayStatus(match.status))}` : ""}</span>
-        </a>`
+          ${storyMeta ? `<span>${escapeHtml(storyMeta)}</span>` : ""}
+        </a>`;
+      }
     )
     .join("");
 
@@ -1158,7 +1168,7 @@ function renderLeagueCard(league, leagueMatches) {
         </div>
         <div class="league-stories">
           <h3>${escapeHtml(t("leagueLatestStories"))}</h3>
-          ${stories || `<p class="chat-note">${escapeHtml(t("leagueNotFound"))}</p>`}
+          ${stories}
         </div>
       </div>
     </article>`;
@@ -1253,6 +1263,18 @@ function parseDisplayTime(value) {
 
 function getSortedMatches(list) {
   return [...list].sort((a, b) => {
+    const orderA = Number(a.displayOrder);
+    const orderB = Number(b.displayOrder);
+    const hasOrderA = Number.isFinite(orderA);
+    const hasOrderB = Number.isFinite(orderB);
+    if (hasOrderA || hasOrderB) {
+      if (hasOrderA && hasOrderB && orderA !== orderB) {
+        return orderA - orderB;
+      }
+      if (hasOrderA !== hasOrderB) {
+        return hasOrderA ? -1 : 1;
+      }
+    }
     const timeA = getMatchTimeValue(a);
     const timeB = getMatchTimeValue(b);
     if (timeA !== timeB) {
@@ -1461,23 +1483,22 @@ function renderDetail(matchId) {
 
   activeContext = null;
   updateRoleBadge();
-  const shouldLoad = shouldLoadEvents(match);
-  const visibleCount = getTimelineCount(match);
   const videoUrl = getMatchVideoUrl(match);
   const videoType = getVideoMimeType(videoUrl);
+  const detailKicker = [match.league, isMissingText(match.time) ? "" : match.time]
+    .filter(Boolean)
+    .join(" · ");
+  const detailSummary = isMissingText(match.summary)
+    ? ""
+    : `<p class="dek">${escapeHtml(match.summary)}</p>`;
   const view = detailTemplate.content.cloneNode(true);
   view.querySelector(".detail-page").innerHTML = `
-    <div class="article-main">
+    <div class="article-main match-thread-head">
       <header class="article-header">
         ${isAdmin() ? `<div class="admin-inline-toolbar"><a class="ghost-button" href="#/admin/edit/${match.id}">${escapeHtml(t("detailEdit"))}</a></div>` : ""}
-        <p class="kicker">${escapeHtml(match.league)} · ${escapeHtml(displayText(match.time))}</p>
+        ${detailKicker ? `<p class="kicker">${escapeHtml(detailKicker)}</p>` : ""}
         <h1>${escapeHtml(match.title)}</h1>
-        <p class="dek">${escapeHtml(displayText(match.summary))}</p>
-        <div class="meta-row">
-          <span>${renderTeamAbbr(match.home)} vs ${renderTeamAbbr(match.away)}</span>
-          <span>${match.readTime}</span>
-          <span>${match.relatedCount} ${escapeHtml(t("relatedLabel"))}</span>
-        </div>
+        ${detailSummary}
       </header>
       <section class="media-stage">
         <div class="video-wrap">
@@ -1517,73 +1538,23 @@ function renderDetail(matchId) {
           </div>
         </div>
       </section>
-      <section class="article-body">
-        <p>${escapeHtml(displayText(match.articleIntro))}</p>
-        <div class="timeline-block">
-          ${renderEventsHtml(match.events, shouldLoad, visibleCount)}
-        </div>
-        <div class="timeline-actions">
-          ${renderTimelineMoreButton(match, shouldLoad, visibleCount)}
-        </div>
-        <p>${escapeHtml(displayText(match.articleNote))}</p>
-      </section>
     </div>
-    <aside class="detail-rail">
-      <section class="match-side-panel">
-        <div class="panel-heading">
-          <span class="accent-bar"></span>
-          <h2>${escapeHtml(t("detailMatchCenter"))}</h2>
+    <section class="chat-panel" aria-label="${escapeAttr(t("detailAskAgent"))}">
+      <div class="chat-log" id="chatLog">
+        ${renderChatLogHtml(match.id)}
+      </div>
+      <div class="chat-form" id="chatForm">
+        <div class="chat-context-bar" id="chatContextBar"></div>
+        <div class="chat-composer">
+          <textarea id="chatInput" rows="1" placeholder="${escapeAttr(t("detailAskAgent"))}..."></textarea>
+          <button class="send-button" type="button">${escapeHtml(t("detailSend"))}</button>
         </div>
-        <div class="mini-score">
-          <span>${renderTeamAbbr(match.home)}</span>
-          <strong>${match.score}</strong>
-          <span class="team-right">${renderTeamAbbr(match.away)}</span>
-        </div>
-        <div class="stat-table">
-          ${statRow(t("statPossession"), match.stats.possession[0], match.stats.possession[1], "%")}
-          ${statRow(t("statShots"), match.stats.shots[0], match.stats.shots[1], "")}
-          ${statRow(t("statXg"), match.stats.xg[0], match.stats.xg[1], "")}
-        </div>
-      </section>
-      <section class="chat-panel" aria-label="${escapeAttr(t("detailAskAgent"))}">
-        <div class="chat-header">
-          <h2>${escapeHtml(t("detailAskAgent"))}</h2>
-          <div class="context-pills">
-            <span>${match.id}</span>
-            <div class="timer-context-row">
-              <span id="videoContext">${escapeHtml(t("detailVideoLabel"))} 00:00</span>
-              <button id="pinMomentBtn" class="pin-moment-btn" type="button" title="${escapeAttr(t("detailPinMomentTitle"))}">
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:2px;vertical-align:middle;"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
-                ${escapeHtml(t("detailPinMoment"))}
-              </button>
-            </div>
-            <span>${escapeHtml(t("detailMemoryOn"))}</span>
-          </div>
-        </div>
-        <div class="chat-log" id="chatLog">
-          ${renderChatLogHtml(match.id)}
-        </div>
-        <div class="quick-prompts" id="quickPrompts">
-          <button type="button">${escapeHtml(t("detailPromptSummary"))}</button>
-          <button type="button">${escapeHtml(t("detailPromptGoal"))}</button>
-          <button type="button">${escapeHtml(t("detailPromptHighlight"))}</button>
-        </div>
-        <div class="chat-form" id="chatForm">
-          <div class="chat-context-bar" id="chatContextBar"></div>
-          <div class="chat-composer">
-            <textarea id="chatInput" rows="1" placeholder="${escapeAttr(t("detailAskAgent"))}..."></textarea>
-            <button class="send-button" type="button">${escapeHtml(t("detailSend"))}</button>
-          </div>
-        </div>
-      </section>
-    </aside>`;
+      </div>
+    </section>
+    `;
 
   app.replaceChildren(view);
   wireDetail(match);
-  wireTimelineMore(match);
-  if (shouldLoad) {
-    hydrateMatchEvents(match);
-  }
 }
 
 function renderAdminLogin(message = "") {
@@ -2611,12 +2582,17 @@ function wireDetail(match) {
   video.addEventListener("timeupdate", () => {
     const currentMin = Math.floor(video.currentTime / 60);
     updateVideoContext(currentMin);
+    if (isTimelineDragging || (actionBar && actionBar.classList.contains("is-active"))) {
+      return;
+    }
     updateChatContextBar(currentMin);
   });
 
   let agentInFlight = false;
   const sendButton = chatForm.querySelector(".send-button");
-  const quickPromptButtons = Array.from(quickPrompts.querySelectorAll("button"));
+  const quickPromptButtons = quickPrompts
+    ? Array.from(quickPrompts.querySelectorAll("button"))
+    : [];
   const setChatPending = (isPending) => {
     agentInFlight = isPending;
     if (isPending) {
@@ -2641,11 +2617,14 @@ function wireDetail(match) {
     if (!text) return;
 
     appendMessage(chatLog, text, "user");
-    rememberChatMessage(match.id, "user", text);
     chatInput.value = "";
     resizeComposer();
 
-    const packet = buildAgentContext(match, Math.floor(video.currentTime / 60), text);
+    const packet = buildAgentContext(match, {
+      currentTimeSeconds: video.currentTime,
+      durationSeconds: video.duration
+    }, text);
+    rememberChatMessage(match.id, "user", text);
     const requestId = createAgentRequestId();
     const answerNode = appendMessage(chatLog, t("agentThinkingInitial"), "agent thinking");
 
@@ -2655,14 +2634,14 @@ function wireDetail(match) {
       answerNode.className = "message agent";
       setAgentMessageHtml(answerNode, answer);
       rememberChatMessage(match.id, "agent", answer);
-      chatLog.scrollTop = chatLog.scrollHeight;
+      answerNode.scrollIntoView({ block: "nearest" });
     } catch (error) {
       console.warn("Agent API error.", error);
       answerNode.className = "message agent";
       const errorText = `Không gọi được Agent API.\n\nEndpoint đang dùng: \`${AGENT_API_URL}\`\n\nLỗi: \`${formatAgentError(error)}\``;
       setAgentMessageHtml(answerNode, errorText);
       rememberChatMessage(match.id, "agent", errorText);
-      chatLog.scrollTop = chatLog.scrollHeight;
+      answerNode.scrollIntoView({ block: "nearest" });
     } finally {
       setChatPending(false);
       chatInput.focus();
@@ -2685,13 +2664,15 @@ function wireDetail(match) {
     }
   });
 
-  quickPrompts.addEventListener("click", (event) => {
-    const button = event.target.closest("button");
-    if (!button || agentInFlight) return;
-    chatInput.value = button.textContent;
-    resizeComposer();
-    chatInput.focus();
-  });
+  if (quickPrompts) {
+    quickPrompts.addEventListener("click", (event) => {
+      const button = event.target.closest("button");
+      if (!button || agentInFlight) return;
+      chatInput.value = button.textContent;
+      resizeComposer();
+      chatInput.focus();
+    });
+  }
 
   // Pin current moment button wiring
   const pinMomentBtn = document.querySelector("#pinMomentBtn");
@@ -2759,18 +2740,19 @@ function wireDetail(match) {
   updateChatContextBar(currentMin);
 
   function updateVideoContext(minute) {
+    if (!videoContext) return;
     const safeMinute = Number.isFinite(minute) ? Math.max(0, minute) : 0;
     videoContext.textContent = `${t("detailVideoLabel")} ${String(Math.floor(safeMinute / 60)).padStart(2, "0")}:${String(safeMinute % 60).padStart(2, "0")}`;
   }
 
   function resizeComposer() {
+    const maxHeight = 260;
     chatInput.style.height = "auto";
-    chatInput.style.height = `${Math.min(chatInput.scrollHeight, 154)}px`;
-    chatInput.style.overflowY = chatInput.scrollHeight > 154 ? "auto" : "hidden";
+    chatInput.style.height = `${Math.min(chatInput.scrollHeight, maxHeight)}px`;
+    chatInput.style.overflowY = chatInput.scrollHeight > maxHeight ? "auto" : "hidden";
   }
 
   resizeComposer();
-  chatLog.scrollTop = chatLog.scrollHeight;
 }
 
 function appendMessage(chatLog, text, role) {
@@ -2778,7 +2760,7 @@ function appendMessage(chatLog, text, role) {
   node.className = `message ${role}`;
   node.textContent = text;
   chatLog.appendChild(node);
-  chatLog.scrollTop = chatLog.scrollHeight;
+  node.scrollIntoView({ block: "nearest" });
   return node;
 }
 
@@ -2794,10 +2776,19 @@ function rememberChatMessage(matchId, role, text) {
   chatMemory.set(matchId, next);
 }
 
+function getAgentConversationTurns(matchId, limit = 6) {
+  if (!matchId) return [];
+  const safeLimit = Number.isFinite(limit) ? Math.max(0, Math.floor(limit)) : 6;
+  return (chatMemory.get(matchId) || []).slice(-safeLimit).map((message) => ({
+    role: message.role === "user" ? "user" : "agent",
+    text: String(message.text || "").slice(0, 1200)
+  }));
+}
+
 function renderChatLogHtml(matchId) {
   const messages = chatMemory.get(matchId) || [];
   if (!messages.length) {
-    return `<div class="message agent">${escapeHtml(t("chatAgentIntro"))}</div>`;
+    return "";
   }
 
   return messages
@@ -2823,13 +2814,25 @@ function formatAgentError(error) {
   return error.message || String(error);
 }
 
-function buildAgentContext(match, currentMinute, userMessage) {
+function buildAgentContext(match, videoState, userMessage) {
   let contextInfo = null;
-  let queryMinute = currentMinute;
+  const currentTimeSeconds = Number.isFinite(videoState && videoState.currentTimeSeconds)
+    ? Math.max(0, videoState.currentTimeSeconds)
+    : 0;
+  const durationSeconds = Number.isFinite(videoState && videoState.durationSeconds)
+    ? Math.max(0, videoState.durationSeconds)
+    : null;
+  let queryMinute = Math.floor(currentTimeSeconds / 60);
+  let anchorSecond = currentTimeSeconds;
+  let clipSource = "playback";
+  let rangeStartSecond = null;
+  let rangeEndSecond = null;
 
   if (activeContext) {
     if (activeContext.type === "moment") {
       queryMinute = activeContext.minute;
+      anchorSecond = activeContext.minute * 60;
+      clipSource = "moment";
       contextInfo = {
         type: "moment",
         label: `Phút ${activeContext.minute}`,
@@ -2837,6 +2840,10 @@ function buildAgentContext(match, currentMinute, userMessage) {
       };
     } else if (activeContext.type === "range") {
       queryMinute = Math.floor((activeContext.start + activeContext.end) / 2);
+      anchorSecond = queryMinute * 60;
+      rangeStartSecond = activeContext.start * 60;
+      rangeEndSecond = activeContext.end * 60;
+      clipSource = "range";
       contextInfo = {
         type: "range",
         label: `Phút ${activeContext.start} - ${activeContext.end}`,
@@ -2845,6 +2852,8 @@ function buildAgentContext(match, currentMinute, userMessage) {
       };
     } else if (activeContext.type === "chapter") {
       queryMinute = activeContext.minute;
+      anchorSecond = activeContext.minute * 60;
+      clipSource = "chapter";
       contextInfo = {
         type: "chapter",
         label: `Chương: ${activeContext.label} (Phút ${activeContext.minute})`,
@@ -2852,6 +2861,8 @@ function buildAgentContext(match, currentMinute, userMessage) {
       };
     } else if (activeContext.type === "event") {
       queryMinute = activeContext.minute;
+      anchorSecond = activeContext.minute * 60;
+      clipSource = "event";
       contextInfo = {
         type: "event",
         label: `Sự kiện: ${activeContext.text} (Phút ${activeContext.minute})`,
@@ -2872,9 +2883,24 @@ function buildAgentContext(match, currentMinute, userMessage) {
     );
   }
 
+  const clipStart = rangeStartSecond !== null
+    ? Math.max(0, rangeStartSecond)
+    : Math.max(0, anchorSecond - 15);
+  const rawClipEnd = rangeEndSecond !== null
+    ? Math.max(clipStart, rangeEndSecond)
+    : clipStart + 60;
+  const clipEnd = durationSeconds !== null && durationSeconds > 0
+    ? Math.min(rawClipEnd, durationSeconds)
+    : rawClipEnd;
+  const videoUrl = getMatchVideoUrl(match);
+  const keepLastTurns = 6;
+
   return {
     route: "match-detail",
     userMessage,
+    conversation: {
+      lastTurns: getAgentConversationTurns(match.id, keepLastTurns)
+    },
     activeContext: contextInfo,
     match: {
       id: match.id,
@@ -2891,11 +2917,21 @@ function buildAgentContext(match, currentMinute, userMessage) {
     },
     media: {
       currentMinute: queryMinute,
+      currentTimeSeconds,
+      durationSeconds,
+      videoUrl,
+      clipWindow: {
+        mode: rangeStartSecond !== null ? "range" : "anchor",
+        startSecond: clipStart,
+        endSecond: clipEnd,
+        anchorSecond,
+        source: clipSource
+      },
       nearbyEvents,
       retrievalWindowSeconds: 180
     },
     memoryPolicy: {
-      keepLastTurns: 6,
+      keepLastTurns,
       summarizeOlderTurns: true,
       retrieveBy: ["match_id", "team", "player", "minute", "topic"]
     }

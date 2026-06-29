@@ -14,11 +14,13 @@ Run from the conda soccer environment:
 from __future__ import annotations
 
 import json
+import importlib.util
 import os
 import re
 import sys
 import threading
 import time
+from contextlib import contextmanager, redirect_stdout
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
 from socketserver import ThreadingMixIn
@@ -37,15 +39,34 @@ AGENT_MAX_TOKENS = int(os.getenv("AGENT_MAX_TOKENS", "768"))
 INCLUDE_DEBUG = os.getenv("AGENT_INCLUDE_DEBUG", "").lower() in {"1", "true", "yes"}
 DEMO_ROOT = Path(__file__).resolve().parent
 VIDEO_CHUNK_SIZE = int(os.getenv("VIDEO_CHUNK_SIZE", str(1024 * 1024)))
-# Keep the default LLM log outside Demo-Soccer. Browser live-reload servers often
-# watch the web root and refresh the page whenever logs inside it change.
-DEFAULT_LLM_LOG_PATH = Path(os.getenv("AGENT_LLM_LOG_DIR", "/tmp/matchpulse-demo-soccer")) / "llm_output.log"
-LLM_LOG_PATH = Path(os.getenv("AGENT_LLM_LOG", str(DEFAULT_LLM_LOG_PATH)))
+CLIP_OUTPUT_DIR = Path(os.getenv("AGENT_CLIP_DIR", "/tmp/matchpulse-demo-soccer/clips"))
+SAFE_LLM_LOG_PATH = Path("/tmp/matchpulse-demo-soccer") / "llm_output.log"
+# Keep LLM logs outside the repo. Browser live-reload servers and IDE watchers
+# often refresh the page whenever a file inside the workspace changes.
+DEFAULT_LLM_LOG_PATH = Path(os.getenv("AGENT_LLM_LOG_DIR", str(SAFE_LLM_LOG_PATH.parent))) / "llm_output.log"
+CONFIGURED_LLM_LOG_PATH = Path(os.getenv("AGENT_LLM_LOG", str(DEFAULT_LLM_LOG_PATH)))
+ALLOW_WATCHED_LLM_LOG = os.getenv("AGENT_LLM_LOG_ALLOW_WATCHED", "").strip().lower() in {"1", "true", "yes", "on"}
+
+
+def _path_is_inside(path: Path, root: Path) -> bool:
+    try:
+        path.resolve().relative_to(root.resolve())
+        return True
+    except (OSError, ValueError):
+        return False
+
+
+LLM_LOG_RELOCATED = (
+    not ALLOW_WATCHED_LLM_LOG
+    and any(_path_is_inside(CONFIGURED_LLM_LOG_PATH, root) for root in (ROOT, DEMO_ROOT))
+)
+LLM_LOG_PATH = SAFE_LLM_LOG_PATH if LLM_LOG_RELOCATED else CONFIGURED_LLM_LOG_PATH
 ENABLE_LLM_LOG = os.getenv("AGENT_LLM_LOG_DISABLE", "").strip().lower() not in {"1", "true", "yes", "on"}
 
 _AGENT: Any | None = None
 _REASONING_CONTEXT_CLS: Any | None = None
 _AGENT_INFO: dict[str, Any] = {}
+_EXTRACT_CLIP_FN: Any | None = None
 _INIT_LOCK = threading.Lock()
 _RUN_LOCK = threading.Lock()
 _STATUS_LOCK = threading.Lock()
@@ -64,7 +85,7 @@ def _json_bytes(payload: dict[str, Any], status: int = 200) -> tuple[int, bytes]
 
 
 def _log(prefix: str, message: str):
-    print(f"[{prefix}] {message}", flush=True)
+    print(f"[{prefix}] {message}", flush=True, file=sys.__stdout__)
 
 
 def _timestamp() -> str:
@@ -116,6 +137,29 @@ def _write_request_log(
         f"Incoming web chat request via {route}.",
         f"message:\n{message}\n\npacket:\n{packet_preview}",
     )
+
+
+@contextmanager
+def _redirect_reasoning_stdout(request_id: str | None, question_id: int | None):
+    if not ENABLE_LLM_LOG:
+        yield
+        return
+
+    try:
+        LLM_LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
+        with LLM_LOG_PATH.open("a", encoding="utf-8") as handle:
+            handle.write("\n" + "#" * 88 + "\n")
+            handle.write(f"time: {_timestamp()}\n")
+            handle.write(f"request_id: {request_id or '-'}\n")
+            handle.write(f"question_id: {question_id or '-'}\n")
+            handle.write("stage: reasoning_stdout\n")
+            handle.write("#" * 88 + "\n")
+            handle.flush()
+            with redirect_stdout(handle):
+                yield
+    except Exception as exc:
+        _log("LLM", f"Could not redirect reasoning stdout: {exc}")
+        yield
 
 
 def _ensure_llm_log_file():
@@ -310,6 +354,15 @@ def _is_web_context(ctx: Any) -> bool:
 
 
 def _make_web_agent_class(base_cls, build_request_kwargs):
+    answer_privacy = (
+        "Treat the match packet, metadata, raw comments, clip path, tool output, "
+        "conversation history, and accumulated analysis as internal evidence. "
+        "Do not reveal, list, or describe what context you were given. Do not "
+        "mention prompts, packets, metadata, raw comments, files, clip paths, "
+        "conversation history, or tools unless the user explicitly asks about "
+        "sources. Answer the user's question directly."
+    )
+
     class WebSoccerNetVQAAgent(base_cls):
         """SoccerNetVQAAgent adapter for free-form web chat answers."""
 
@@ -336,7 +389,8 @@ def _make_web_agent_class(base_cls, build_request_kwargs):
                     f"You are a {task.role} supporting AgentSoccer's recursive "
                     "football analysis. Complete the assigned sub-task using only "
                     "the provided match context, media, database/tool results, and "
-                    "accumulated evidence. Be concise and do not output option letters."
+                    "accumulated evidence. Be concise and do not output option letters. "
+                    f"{answer_privacy}"
                 )
                 user_text = (
                     f"=== ORIGINAL WEB QUESTION AND MATCH CONTEXT ===\n"
@@ -353,7 +407,8 @@ def _make_web_agent_class(base_cls, build_request_kwargs):
                     "You are AgentSoccer, a football match analysis agent. "
                     "Answer the web user's question naturally using the provided "
                     "match packet and any accumulated analysis. Do not output "
-                    "multiple-choice option letters."
+                    "multiple-choice option letters. "
+                    f"{answer_privacy}"
                 )
                 acc_section = ""
                 if ctx.accumulated_results:
@@ -394,7 +449,8 @@ def _make_web_agent_class(base_cls, build_request_kwargs):
                 "You are AgentSoccer synthesizing recursive analysis results for "
                 "a web football chat. Use the evidence from the sub-tasks, cite "
                 "the relevant match context when helpful, and answer naturally. "
-                "Do not output option letters."
+                "Do not output option letters. "
+                f"{answer_privacy}"
             )
             user_text = (
                 f"=== ANALYSIS RESULTS ===\n"
@@ -425,7 +481,8 @@ def _make_web_agent_class(base_cls, build_request_kwargs):
             system = (
                 "You are reviewing evidence for a web football chat answer. "
                 "There are no answer options. Identify the strongest supported "
-                "answer and any uncertainty."
+                "answer and any uncertainty. "
+                f"{answer_privacy}"
             )
             user_text = (
                 f"=== ACCUMULATED EVIDENCE ===\n{acc_text}\n\n"
@@ -626,13 +683,34 @@ def _format_stats(stats: Any) -> str:
     return "; ".join(parts)
 
 
+def _format_conversation_history(packet: dict[str, Any]) -> list[str]:
+    conversation = packet.get("conversation") if isinstance(packet, dict) else {}
+    conversation = conversation if isinstance(conversation, dict) else {}
+    turns = conversation.get("lastTurns")
+    if not isinstance(turns, list) or not turns:
+        return []
+
+    lines = ["=== INTERNAL CONVERSATION HISTORY ==="]
+    for turn in turns[-8:]:
+        if not isinstance(turn, dict):
+            continue
+        role = _clean_text(turn.get("role")).lower()
+        label = "User" if role == "user" else "Agent"
+        text = _clean_text(turn.get("text"))
+        if text:
+            lines.append(f"{label}: {text[:1600]}")
+    return lines if len(lines) > 1 else []
+
+
 def _format_match_packet(packet: dict[str, Any], message: str, lang: str) -> str:
     match = packet.get("match") if isinstance(packet, dict) else {}
     media = packet.get("media") if isinstance(packet, dict) else {}
     ctx = packet.get("activeContext") if isinstance(packet, dict) else None
+    server_ctx = packet.get("_serverContext") if isinstance(packet, dict) else {}
     match = match if isinstance(match, dict) else {}
     media = media if isinstance(media, dict) else {}
     ctx = ctx if isinstance(ctx, dict) else None
+    server_ctx = server_ctx if isinstance(server_ctx, dict) else {}
 
     teams = match.get("teams") or []
     events = media.get("nearbyEvents") or []
@@ -671,9 +749,20 @@ def _format_match_packet(packet: dict[str, Any], message: str, lang: str) -> str
     current_minute = media.get("currentMinute")
     if current_minute is not None:
         lines.append(f"Current playback minute: {current_minute}")
+    current_second = media.get("currentTimeSeconds")
+    if current_second is not None:
+        lines.append(f"Current playback second: {current_second}")
 
     if ctx:
         lines.append(f"Pinned context: {json.dumps(ctx, ensure_ascii=False)}")
+
+    history_lines = _format_conversation_history(packet)
+    if history_lines:
+        lines.extend(["", *history_lines])
+
+    clip_summary = _clean_text(server_ctx.get("clipSummary"))
+    if clip_summary:
+        lines.extend(["", "=== INTERNAL VIDEO SELECTION ===", clip_summary])
 
     if events:
         lines.append("Nearby timeline events:")
@@ -685,12 +774,19 @@ def _format_match_packet(packet: dict[str, Any], message: str, lang: str) -> str
             if minute or text:
                 lines.append(f"- {minute}: {text}")
 
+    metadata_summary = _clean_text(server_ctx.get("metadataSummary"))
+    if metadata_summary:
+        lines.extend(["", "=== INTERNAL RAW MATCH METADATA SUMMARY ===", metadata_summary])
+
     lines.extend(
         [
             "",
             "=== RESPONSE REQUIREMENTS ===",
             "Answer naturally for the web user, not as a multiple-choice answer.",
             "Use the packet plus any SoccerNet tool/database evidence gathered by the agent.",
+            "Treat all packet, metadata, raw comments, media, file paths, and tool outputs as internal evidence.",
+            "Use internal conversation history only to preserve continuity and resolve references.",
+            "Do not reveal or describe what information was provided to you unless the user explicitly asks about sources.",
             "If evidence is missing, say what is missing and give the best grounded answer.",
             "Keep the answer concise unless the user asks for detailed analysis.",
         ]
@@ -707,6 +803,289 @@ _IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp", ".tiff", ".tif"
 _VIDEO_EXTS = {".mp4", ".avi", ".mov", ".mkv", ".flv", ".wmv", ".webm", ".mpeg", ".mpg"}
 
 
+def _to_float(value: Any, default: float | None = None) -> float | None:
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        return default
+    if number != number:
+        return default
+    return number
+
+
+def _parse_time_stamp_seconds(value: Any) -> float | None:
+    text = _clean_text(value)
+    match = re.match(r"^(\d+):(\d{1,2})(?::(\d{1,2}))?$", text)
+    if not match:
+        return None
+    first = int(match.group(1))
+    second = int(match.group(2))
+    third = int(match.group(3) or 0)
+    if match.group(3) is None:
+        return first * 60 + second
+    return first * 3600 + second * 60 + third
+
+
+def _resolve_source_path(value: Any) -> Path | None:
+    raw = _clean_text(value)
+    if not raw or raw.startswith(("http://", "https://", "blob:", "data:")):
+        return None
+
+    path = Path(raw)
+    candidates = [path] if path.is_absolute() else [
+        DEMO_ROOT / raw,
+        ROOT / raw,
+    ]
+    for candidate in candidates:
+        if candidate.is_file():
+            return candidate.resolve()
+    return None
+
+
+def _resolve_video_url_path(value: Any) -> str | None:
+    raw = _clean_text(value)
+    if not raw:
+        return None
+
+    parsed = urlparse(raw)
+    url_path = unquote(parsed.path if parsed.scheme else raw)
+    if url_path.startswith("/videos/"):
+        filename = url_path[len("/videos/"):]
+        if ".." in filename or filename.startswith("/"):
+            return None
+        candidate = DEMO_ROOT / filename
+        if candidate.is_file():
+            return str(candidate.resolve())
+    return None
+
+
+def _normalize_clip_window(packet: dict[str, Any]) -> dict[str, Any]:
+    media = packet.get("media") if isinstance(packet, dict) else {}
+    media = media if isinstance(media, dict) else {}
+    clip = media.get("clipWindow") if isinstance(media.get("clipWindow"), dict) else {}
+
+    mode = _clean_text(clip.get("mode")).lower()
+    source = _clean_text(clip.get("source")) or "playback"
+    start = _to_float(clip.get("startSecond"))
+    end = _to_float(clip.get("endSecond"))
+    anchor = _to_float(clip.get("anchorSecond"))
+
+    if mode == "range" and start is not None and end is not None and end > start:
+        return {
+            "mode": "range",
+            "source": source,
+            "start_sec": max(0.0, start),
+            "end_sec": max(0.0, end),
+            "anchor_sec": anchor if anchor is not None else (start + end) / 2,
+        }
+
+    if start is not None and end is not None and end > start:
+        return {
+            "mode": mode or "anchor",
+            "source": source,
+            "start_sec": max(0.0, start),
+            "end_sec": max(0.0, end),
+            "anchor_sec": anchor if anchor is not None else max(0.0, start) + 15,
+        }
+
+    if anchor is None:
+        anchor = _to_float(media.get("currentTimeSeconds"))
+    if anchor is None:
+        minute = _to_float(media.get("currentMinute"), 0.0) or 0.0
+        anchor = minute * 60
+
+    anchor = max(0.0, anchor or 0.0)
+    start = max(anchor - 15.0, 0.0)
+    return {
+        "mode": mode or "anchor",
+        "source": source,
+        "start_sec": start,
+        "end_sec": start + 60.0,
+        "anchor_sec": anchor,
+    }
+
+
+def _infer_video_half(video_path: str | None) -> int | None:
+    if not video_path:
+        return None
+    stem = Path(video_path).stem
+    match = re.search(r"_(1|2)$", stem)
+    return int(match.group(1)) if match else None
+
+
+def _is_full_match_video(video_path: str | None) -> bool:
+    if not video_path:
+        return False
+    return Path(video_path).stem.endswith("_full")
+
+
+def _short_player(item: Any) -> str:
+    if not isinstance(item, dict):
+        return ""
+    name = _clean_text(item.get("Full Name")) or _clean_text(item.get("players_name"))
+    if not name:
+        return ""
+    number = _clean_text(item.get("players_number"))
+    role = _clean_text(item.get("Role"))
+    rating = _clean_text(item.get("players_rating"))
+    details = []
+    if number:
+        details.append(f"#{number}")
+    if role:
+        details.append(role)
+    if rating:
+        details.append(f"rating {rating}")
+    return f"{name} ({', '.join(details)})" if details else name
+
+
+def _format_player_group(label: str, players: Any, limit: int = 14) -> str:
+    if not isinstance(players, list) or not players:
+        return ""
+    names = [_short_player(player) for player in players]
+    names = [name for name in names if name]
+    if not names:
+        return ""
+    suffix = ""
+    if len(names) > limit:
+        suffix = f"; +{len(names) - limit} more"
+    return f"{label}: {', '.join(names[:limit])}{suffix}"
+
+
+def _select_comments(raw: dict[str, Any], video_path: str | None,
+                     clip_window: dict[str, Any]) -> list[str]:
+    comments = raw.get("comments")
+    if not isinstance(comments, list):
+        return []
+
+    half = _infer_video_half(video_path)
+    is_full_video = _is_full_match_video(video_path)
+    second_half_offset = float(os.getenv(
+        "AGENT_FULL_VIDEO_SECOND_HALF_OFFSET_SECONDS", "2700"))
+    start = float(clip_window.get("start_sec") or 0.0)
+    end = float(clip_window.get("end_sec") or start + 60.0)
+    margin = float(os.getenv("AGENT_METADATA_COMMENT_MARGIN_SECONDS", "90"))
+    lower = max(0.0, start - margin)
+    upper = end + margin
+    selected: list[tuple[float, str]] = []
+
+    for item in comments:
+        if not isinstance(item, dict):
+            continue
+        item_half = _to_float(item.get("half"))
+        if half is not None and int(item_half or -1) != half:
+            continue
+        second = _parse_time_stamp_seconds(item.get("time_stamp"))
+        if second is None:
+            continue
+        if is_full_video and int(item_half or -1) == 2:
+            second += second_half_offset
+        if lower <= second <= upper:
+            ctype = _clean_text(item.get("comments_type"))
+            text = _clean_text(item.get("comments_text"))
+            stamp = _clean_text(item.get("time_stamp"))
+            prefix = f"H{int(item_half)} " if item_half is not None else ""
+            label = f"{prefix}{stamp}"
+            if ctype:
+                label += f" [{ctype}]"
+            if text:
+                selected.append((second, f"- {label}: {text}"))
+
+    selected.sort(key=lambda item: item[0])
+    return [text for _, text in selected[:20]]
+
+
+def _build_metadata_summary(packet: dict[str, Any], video_path: str | None,
+                            clip_window: dict[str, Any]) -> str:
+    match = packet.get("match") if isinstance(packet, dict) else {}
+    match = match if isinstance(match, dict) else {}
+    source_path = _resolve_source_path(match.get("source"))
+    if source_path is None:
+        return "Raw metadata source was not found; using only the web match packet."
+
+    try:
+        raw = json.loads(source_path.read_text(encoding="utf-8"))
+    except Exception as exc:
+        return f"Raw metadata source could not be loaded ({exc}); using only the web match packet."
+    if not isinstance(raw, dict):
+        return "Raw metadata source is not an object; using only the web match packet."
+
+    lines = [f"Source: {source_path.relative_to(DEMO_ROOT) if source_path.is_relative_to(DEMO_ROOT) else source_path}"]
+    match_info = raw.get("match_info") if isinstance(raw.get("match_info"), dict) else {}
+    if match_info:
+        fields = [
+            ("Timestamp", match_info.get("timestamp")),
+            ("Score", match_info.get("score")),
+            ("Teams", f"{_clean_text(match_info.get('home_team'))} vs {_clean_text(match_info.get('away_team'))}"),
+            ("Formations", f"{_clean_text(match_info.get('home_formation'))} vs {_clean_text(match_info.get('away_formation'))}"),
+            ("Venue", match_info.get("venue")),
+            ("Attendance", match_info.get("attendance")),
+            ("Jersey colors", f"{_clean_text(match_info.get('home_jersey_color'))} vs {_clean_text(match_info.get('away_jersey_color'))}"),
+        ]
+        for label, value in fields:
+            text = _clean_text(value)
+            if text and text != "vs":
+                lines.append(f"{label}: {text}")
+
+    referee = raw.get("referee_data") if isinstance(raw.get("referee_data"), dict) else {}
+    referee_name = _clean_text(referee.get("short_name_country")) or _clean_text(referee.get("first_name"))
+    if referee_name:
+        lines.append(f"Referee: {referee_name}")
+
+    players = raw.get("players_data") if isinstance(raw.get("players_data"), dict) else {}
+    for label, key in [
+        ("Home starting XI", "home_starting_lineups"),
+        ("Away starting XI", "away_starting_lineups"),
+        ("Home substitutes used", "home_substituted_players"),
+        ("Away substitutes used", "away_substituted_players"),
+        ("Home unavailable/missing", "home_missing_players"),
+        ("Away unavailable/missing", "away_missing_players"),
+    ]:
+        group = _format_player_group(label, players.get(key))
+        if group:
+            lines.append(group)
+
+    comments = _select_comments(raw, video_path, clip_window)
+    if comments:
+        lines.append("Raw comments near the selected clip:")
+        lines.extend(comments)
+    else:
+        lines.append("Raw comments near the selected clip: none found.")
+
+    return "\n".join(lines)
+
+
+def _clip_summary(source_video: str, clip_path: str | None,
+                  clip_window: dict[str, Any]) -> str:
+    start = float(clip_window.get("start_sec") or 0.0)
+    end = float(clip_window.get("end_sec") or 0.0)
+    anchor = float(clip_window.get("anchor_sec") or 0.0)
+    lines = [
+        f"Source video: {source_video}",
+        f"Clip window: {start:.2f}s -> {end:.2f}s",
+        f"Anchor: {anchor:.2f}s",
+        f"Mode/source: {_clean_text(clip_window.get('mode'))}/{_clean_text(clip_window.get('source'))}",
+    ]
+    return "\n".join(lines)
+
+
+def _load_extract_clip_fn():
+    global _EXTRACT_CLIP_FN
+    if _EXTRACT_CLIP_FN is not None:
+        return _EXTRACT_CLIP_FN
+
+    module_path = ROOT / "pipeline" / "agent" / "cut_clip.py"
+    spec = importlib.util.spec_from_file_location("matchpulse_cut_clip", module_path)
+    if spec is None or spec.loader is None:
+        raise RuntimeError(f"Cannot load cut_clip.py from {module_path}")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    extract_clip = getattr(module, "extract_clip", None)
+    if not callable(extract_clip):
+        raise RuntimeError(f"cut_clip.py at {module_path} does not expose extract_clip")
+    _EXTRACT_CLIP_FN = extract_clip
+    return extract_clip
+
+
 def _candidate_media_values(packet: dict[str, Any]) -> list[Any]:
     match = packet.get("match") if isinstance(packet, dict) else {}
     media = packet.get("media") if isinstance(packet, dict) else {}
@@ -717,10 +1096,10 @@ def _candidate_media_values(packet: dict[str, Any]) -> list[Any]:
     for key in ("paths", "mediaPaths", "materialPaths", "files"):
         if isinstance(media.get(key), list):
             values.extend(media.get(key))
-    for key in ("path", "localPath", "videoPath", "imagePath"):
+    for key in ("path", "localPath", "videoPath", "imagePath", "videoUrl"):
         if media.get(key):
             values.append(media.get(key))
-    for key in ("videoPath", "imagePath", "materialPath"):
+    for key in ("videoPath", "imagePath", "materialPath", "videoUrl"):
         if match.get(key):
             values.append(match.get(key))
     return values
@@ -728,7 +1107,12 @@ def _candidate_media_values(packet: dict[str, Any]) -> list[Any]:
 
 def _resolve_local_media_path(value: Any) -> str | None:
     raw = _clean_text(value)
-    if not raw or raw.startswith(("http://", "https://", "blob:", "data:")):
+    if not raw:
+        return None
+    url_path = _resolve_video_url_path(raw)
+    if url_path:
+        return url_path
+    if raw.startswith(("http://", "https://", "blob:", "data:")):
         return None
 
     path = Path(raw)
@@ -762,16 +1146,88 @@ def _extract_media(packet: dict[str, Any]) -> tuple[str, list[str]]:
     return "none", []
 
 
+def _prepare_llm_media(packet: dict[str, Any], agent: Any | None) -> tuple[str, list[str], dict[str, Any]]:
+    source_media_type, source_paths = _extract_media(packet)
+    media = packet.get("media") if isinstance(packet, dict) else {}
+    media = media if isinstance(media, dict) else {}
+    clip_window = _normalize_clip_window(packet)
+    server_context: dict[str, Any] = {
+        "clipWindow": clip_window,
+    }
+
+    video_url = media.get("videoUrl")
+    if video_url and (source_media_type != "video" or not source_paths):
+        raise RuntimeError(f"Video could not be resolved from media.videoUrl={video_url!r}")
+
+    if source_media_type != "video" or not source_paths:
+        server_context["metadataSummary"] = _build_metadata_summary(
+            packet, None, clip_window)
+        return source_media_type, source_paths, server_context
+
+    source_video = source_paths[0]
+    try:
+        extract_clip = _load_extract_clip_fn()
+    except Exception as exc:
+        raise RuntimeError("Cannot load video clip cutter from pipeline/agent/cut_clip.py") from exc
+
+    CLIP_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    try:
+        clip = extract_clip(
+            video_path=source_video,
+            output_dir=str(CLIP_OUTPUT_DIR),
+            start_sec=float(clip_window["start_sec"]),
+            end_sec=float(clip_window["end_sec"]),
+        )
+    except Exception as exc:
+        raise RuntimeError(
+            "Failed to cut the selected video clip "
+            f"({clip_window['start_sec']:.2f}s-{clip_window['end_sec']:.2f}s) "
+            f"from {source_video}: {exc}"
+        ) from exc
+
+    clip_path = _clean_text(clip.get("path")) if isinstance(clip, dict) else ""
+    if not clip_path or not Path(clip_path).is_file():
+        raise RuntimeError("Clip cutter did not return a valid output video path.")
+
+    if isinstance(clip, dict):
+        clip_window = {
+            **clip_window,
+            "start_sec": float(clip.get("start_sec", clip_window["start_sec"])),
+            "end_sec": float(clip.get("end_sec", clip_window["end_sec"])),
+        }
+        server_context["clipWindow"] = clip_window
+
+    if agent is not None and hasattr(agent, "_temp_files"):
+        try:
+            agent._temp_files.append(clip_path)
+        except Exception:
+            pass
+
+    server_context["sourceVideo"] = source_video
+    server_context["clipPath"] = clip_path
+    server_context["clipSummary"] = _clip_summary(source_video, clip_path, clip_window)
+    server_context["metadataSummary"] = _build_metadata_summary(
+        packet, source_video, clip_window)
+    _log(
+        "MEDIA",
+        f"Prepared LLM clip {clip_path} from {Path(source_video).name} "
+        f"{clip_window['start_sec']:.2f}-{clip_window['end_sec']:.2f}s",
+    )
+    return "video", [clip_path], server_context
+
+
 def _build_reasoning_context(
     message: str,
     packet: dict[str, Any],
     lang: str,
     request_id: str | None = None,
+    agent: Any | None = None,
 ) -> tuple[Any, int, str, str, list[str]]:
     if _REASONING_CONTEXT_CLS is None:
         raise RuntimeError("ReasoningContext is not loaded")
 
-    media_type, media_paths = _extract_media(packet)
+    media_type, media_paths, server_context = _prepare_llm_media(packet, agent)
+    packet["_serverContext"] = server_context
     web_question = _format_match_packet(packet, message, lang)
     question_id = int(time.time() * 1000)
 
@@ -837,29 +1293,30 @@ def answer_with_agent(
         )
         agent = get_agent()
 
-        ctx, question_id, web_question, media_type, media_paths = _build_reasoning_context(
-            message, packet, lang, request_id
-        )
-        if request_id:
-            _QUESTION_TO_REQUEST[question_id] = request_id
-        _set_request_status(
-            request_id,
-            state="thinking",
-            label="Building SoccerNet reasoning context.",
-            question_id=question_id,
-            media_type=media_type,
-            media_paths=media_paths,
-        )
-        log_start = len(getattr(agent, "stage_log", []))
-        agent._current_question = web_question
         try:
+            ctx, question_id, web_question, media_type, media_paths = _build_reasoning_context(
+                message, packet, lang, request_id, agent
+            )
+            if request_id:
+                _QUESTION_TO_REQUEST[question_id] = request_id
+            _set_request_status(
+                request_id,
+                state="thinking",
+                label="Building SoccerNet reasoning context.",
+                question_id=question_id,
+                media_type=media_type,
+                media_paths=media_paths,
+            )
+            log_start = len(getattr(agent, "stage_log", []))
+            agent._current_question = web_question
             _set_request_status(
                 request_id,
                 state="thinking",
                 label="Agent is planning the reasoning steps.",
             )
             _log("AGENT", f"{request_id or '-'} start reasoning")
-            answer = agent._reason(ctx, depth=0).strip()
+            with _redirect_reasoning_stdout(request_id, question_id):
+                answer = agent._reason(ctx, depth=0).strip()
         except Exception as exc:
             _set_request_status(
                 request_id,
@@ -964,6 +1421,8 @@ class _Handler(BaseHTTPRequestHandler):
                 "python": sys.executable,
                 "llm_log_enabled": ENABLE_LLM_LOG,
                 "llm_log": str(LLM_LOG_PATH) if ENABLE_LLM_LOG else None,
+                "llm_log_configured": str(CONFIGURED_LLM_LOG_PATH),
+                "llm_log_relocated": LLM_LOG_RELOCATED,
                 "route": "web -> SoccerNetVQAAgent -> vLLM",
             }
             if send_body:
@@ -1159,6 +1618,13 @@ def main():
     _log("AGENT", f"Python: {sys.executable}")
     if ENABLE_LLM_LOG:
         _log("AGENT", f"LLM log: {LLM_LOG_PATH}")
+        if LLM_LOG_RELOCATED:
+            _log(
+                "AGENT",
+                "Configured LLM log was inside the watched workspace; "
+                f"relocated from {CONFIGURED_LLM_LOG_PATH} to {LLM_LOG_PATH}. "
+                "Set AGENT_LLM_LOG_ALLOW_WATCHED=1 to override.",
+            )
     else:
         _log("AGENT", "LLM log: disabled by AGENT_LLM_LOG_DISABLE")
     _log("AGENT", "Loading SoccerNetVQAAgent at startup...")
